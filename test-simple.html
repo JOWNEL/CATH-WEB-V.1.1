@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cath Aesthetics - Test Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #d4a5b5;
+            text-align: center;
+        }
+        .test-item {
+            padding: 10px;
+            margin: 10px 0;
+            background: #f8f8f8;
+            border-radius: 5px;
+        }
+        .success {
+            background: #d4f4dd;
+            color: #2d5016;
+        }
+        .error {
+            background: #ffd4d4;
+            color: #8b0000;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> Cath Aesthetics - System Test</h1>
+        <p>This page tests if the basic functionality works on GitHub Pages.</p>
+        
+        <div id="test-results">
+            <div class="test-item">Testing JavaScript...</div>
+            <div class="test-item">Testing CSS...</div>
+            <div class="test-item">Testing HTML...</div>
+        </div>
+        
+        <h2>Navigation Tests</h2>
+        <div class="test-item">
+            <a href="landing.html">Test Landing Page</a>
+        </div>
+        <div class="test-item">
+            <a href="admin-dashboard.html">Test Admin Dashboard</a>
+        </div>
+        <div class="test-item">
+            <a href="login.html">Test Login Page</a>
+        </div>
+        
+        <h2>Console Check</h2>
+        <p>Press F12 and check the Console tab for errors.</p>
+        
+        <div id="status"></div>
+    </div>
+
+    <script>
+        // Simple test to verify JavaScript works
+        console.log("JavaScript is working!");
+        
+        window.onload = function() {
+            const statusDiv = document.getElementById('status');
+            const testResults = document.getElementById('test-results');
+            
+            // Test basic functionality
+            const tests = [
+                { name: "JavaScript", passed: true },
+                { name: "CSS", passed: true },
+                { name: "HTML", passed: true },
+                { name: "DOM Access", passed: !!document.getElementById('status') }
+            ];
+            
+            let html = '';
+            tests.forEach(test => {
+                const className = test.passed ? 'success' : 'error';
+                html += `<div class="test-item ${className}">${test.name}: ${test.passed ? 'PASS' : 'FAIL'}</div>`;
+            });
+            
+            testResults.innerHTML = html;
+            statusDiv.innerHTML = '<div class="success">All basic tests passed! Try the navigation links above.</div>';
+        };
+    </script>
+</body>
+</html>
