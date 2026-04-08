@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Test</title>
+</head>
+<body>
+    <h1>Firebase Connection Test</h1>
+    <div id="status">Testing Firebase connection...</div>
+    <div id="auth-status">Checking authentication...</div>
+    <div id="firestore-status">Testing Firestore...</div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC-uy3DLim-C06ueatkNCr9bZ-4Cnqi5E4",
+            authDomain: "cath-aesthetics.firebaseapp.com",
+            projectId: "cath-aesthetics",
+            storageBucket: "cath-aesthetics.firebasestorage.app",
+            messagingSenderId: 89600382,
+            appId: "1:89600382:web:4b9259e721980ca266c32f",
+            measurementId: "G-V4FRRXM4BC"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        const statusEl = document.getElementById('status');
+        const authStatusEl = document.getElementById('auth-status');
+        const firestoreStatusEl = document.getElementById('firestore-status');
+
+        statusEl.textContent = "✅ Firebase initialized successfully";
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                authStatusEl.textContent = `✅ Authenticated as: ${user.email} (UID: ${user.uid})`;
+
+                try {
+                    const userDocRef = doc(db, "users", user.uid);
+                    const userDoc = await getDoc(userDocRef);
+                    if (userDoc.exists()) {
+                        firestoreStatusEl.textContent = `✅ Firestore working. User data: ${JSON.stringify(userDoc.data())}`;
+                    } else {
+                        firestoreStatusEl.textContent = "⚠️ Firestore working but user document not found";
+                    }
+                } catch (error) {
+                    firestoreStatusEl.textContent = `❌ Firestore error: ${error.message} (Code: ${error.code})`;
+                }
+            } else {
+                authStatusEl.textContent = "❌ Not authenticated";
+                firestoreStatusEl.textContent = "❌ Cannot test Firestore without authentication";
+            }
+        });
+    </script>
+</body>
+</html>
