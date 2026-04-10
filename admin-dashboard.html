@@ -2418,7 +2418,7 @@ opacity: 0;
 /* Quick Actions & Business Insights Styles */
 .quick-actions-insights {
 display: grid;
-grid-template-columns: 1fr 1fr;
+grid-template-columns: 1fr;
 gap: 20px;
 margin-bottom: 25px;
 }
@@ -2428,6 +2428,456 @@ border-radius: 16px;
 padding: 20px;
 box-shadow: var(--card-shadow);
 border: 1px solid var(--secondary);
+}
+
+/* Price Editing Styles */
+.price-editing-form {
+max-width: 600px;
+margin: 0 auto;
+}
+
+.price-editing-header {
+text-align: center;
+margin-bottom: 30px;
+padding: 20px;
+background: var(--secondary);
+border-radius: 12px;
+border: 1px solid var(--border);
+}
+
+.price-editing-header h4 {
+color: var(--primary);
+margin: 0 0 10px 0;
+font-size: 20px;
+}
+
+.price-editing-header p {
+color: var(--text-muted);
+margin: 0;
+font-size: 14px;
+}
+
+.price-editing-controls {
+margin-bottom: 30px;
+}
+
+.service-select-wrapper {
+position: relative;
+}
+
+.service-dropdown {
+width: 100%;
+padding: 15px;
+border: 2px solid var(--primary);
+border-radius: 12px;
+font-size: 16px;
+font-weight: 600;
+background: var(--white);
+color: var(--text-dark);
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+.service-dropdown:focus {
+outline: none;
+border-color: var(--primary-dark);
+box-shadow: 0 0 0 3px rgba(212,165,181,0.2);
+}
+
+.service-dropdown option {
+padding: 12px;
+font-weight: 500;
+}
+
+#service-editing-fields {
+background: var(--white);
+border: 1px solid var(--secondary);
+border-radius: 12px;
+padding: 25px;
+margin-top: 20px;
+box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+}
+
+.service-editing-details h5 {
+color: var(--primary);
+margin: 0 0 20px 0;
+font-size: 18px;
+text-align: center;
+}
+
+.price-editing-inputs {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+.price-editing-actions {
+text-align: center;
+margin-top: 20px;
+}
+
+.price-input-group label {
+display: block;
+font-weight: 600;
+color: var(--text-dark);
+margin-bottom: 8px;
+font-size: 14px;
+}
+
+.price-input-wrapper {
+display: flex;
+align-items: center;
+background: var(--secondary);
+border: 1px solid var(--border);
+border-radius: 8px;
+padding: 10px;
+transition: border-color 0.3s ease;
+}
+
+.price-input-wrapper:focus-within {
+border-color: var(--primary);
+box-shadow: 0 0 0 3px rgba(212,165,181,0.1);
+}
+
+.price-input-wrapper .currency {
+color: var(--primary);
+font-weight: 600;
+margin-right: 10px;
+font-size: 16px;
+}
+
+.price-input-wrapper input {
+flex: 1;
+border: none;
+background: transparent;
+font-size: 16px;
+font-weight: 600;
+color: var(--text-dark);
+outline: none;
+}
+
+.price-input-wrapper input:focus {
+outline: none;
+}
+
+.original-price {
+display: block;
+margin-top: 5px;
+color: var(--text-muted);
+font-size: 12px;
+font-style: italic;
+}
+
+.modal-footer {
+background: var(--secondary);
+border-radius: 0 0 16px 16px;
+}
+
+/* Settings Page Styles */
+.settings-section {
+margin-bottom: 40px;
+}
+
+.settings-header {
+display: flex;
+align-items: center;
+gap: 15px;
+margin-bottom: 25px;
+padding-bottom: 15px;
+border-bottom: 2px solid var(--secondary);
+}
+
+.settings-header h2 {
+color: var(--primary);
+font-size: 24px;
+font-weight: 700;
+margin: 0;
+}
+
+.settings-header p {
+color: var(--text-muted);
+margin: 0;
+font-size: 16px;
+}
+
+.settings-content {
+background: var(--white);
+border-radius: 16px;
+padding: 30px;
+box-shadow: var(--card-shadow);
+border: 1px solid var(--secondary);
+}
+
+.account-info {
+display: flex;
+align-items: center;
+gap: 20px;
+margin-bottom: 25px;
+}
+
+.account-info .user-avatar {
+width: 80px;
+height: 80px;
+font-size: 32px;
+border-radius: 50%;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+color: var(--white);
+display: flex;
+align-items: center;
+justify-content: center;
+box-shadow: 0 4px 12px rgba(212,165,181,0.3);
+}
+
+.user-details {
+flex: 1;
+}
+
+.user-details .user-name {
+font-size: 20px;
+font-weight: 700;
+color: var(--text-dark);
+margin-bottom: 5px;
+}
+
+.user-details .user-role {
+display: inline-flex;
+align-items: center;
+gap: 8px;
+background: var(--secondary);
+padding: 6px 12px;
+border-radius: 20px;
+color: var(--primary);
+font-weight: 600;
+font-size: 14px;
+}
+
+.account-actions {
+display: flex;
+justify-content: flex-end;
+}
+
+.settings-list {
+display: flex;
+flex-direction: column;
+gap: 15px;
+}
+
+.settings-item {
+display: flex;
+align-items: center;
+background: var(--white);
+border: 1px solid var(--secondary);
+border-radius: 8px;
+padding: 8px 12px;
+cursor: pointer;
+transition: all 0.2s ease;
+position: relative;
+}
+
+.settings-item:hover {
+box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+transform: translateY(-1px);
+border-color: var(--primary-light);
+}
+
+.settings-icon {
+width: 32px;
+height: 32px;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+border-radius: 6px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: var(--white);
+font-size: 14px;
+margin-right: 10px;
+flex-shrink: 0;
+}
+
+.settings-content {
+flex: 1;
+}
+
+.settings-content h4 {
+color: var(--text-dark);
+font-size: 14px;
+font-weight: 600;
+margin: 0;
+}
+
+.settings-content p {
+color: var(--text-muted);
+margin: 2px 0 0 0;
+font-size: 12px;
+line-height: 1.3;
+}
+
+.settings-features {
+display: flex;
+gap: 4px;
+flex-wrap: wrap;
+}
+
+.feature-tag {
+background: var(--primary);
+color: var(--white);
+padding: 2px 5px;
+border-radius: 6px;
+font-size: 10px;
+font-weight: 600;
+}
+
+.feature-tag.coming-soon {
+background: var(--text-muted);
+color: var(--white);
+}
+
+.settings-arrow {
+color: var(--text-muted);
+font-size: 12px;
+margin-left: 8px;
+}
+
+.settings-stats {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+gap: 20px;
+margin-top: 40px;
+}
+
+.stat-card {
+background: var(--white);
+border: 1px solid var(--secondary);
+border-radius: 16px;
+padding: 25px;
+text-align: center;
+box-shadow: var(--card-shadow);
+transition: all 0.3s ease;
+}
+
+.stat-card:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+}
+
+.stat-icon {
+width: 50px;
+height: 50px;
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+border-radius: 50%;
+display: flex;
+align-items: center;
+justify-content: center;
+color: var(--white);
+font-size: 20px;
+margin: 0 auto 15px auto;
+}
+
+.stat-info h3 {
+color: var(--text-dark);
+font-size: 28px;
+font-weight: 700;
+margin: 0 0 5px 0;
+}
+
+.stat-info p {
+color: var(--text-muted);
+margin: 0;
+font-size: 14px;
+font-weight: 500;
+}
+
+/* Employee Management Styles */
+.employee-table {
+width: 100%;
+border-collapse: collapse;
+background: var(--white);
+border-radius: 12px;
+overflow: hidden;
+}
+
+.employee-table th {
+background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+color: var(--white);
+padding: 12px 8px;
+text-align: left;
+font-weight: 600;
+font-size: 13px;
+border-bottom: 2px solid var(--primary);
+}
+
+.employee-table td {
+padding: 10px 8px;
+border-bottom: 1px solid var(--secondary);
+font-size: 13px;
+}
+
+.employee-table tr:hover {
+background: var(--secondary);
+}
+
+.activity-table {
+width: 100%;
+border-collapse: collapse;
+background: var(--white);
+border-radius: 12px;
+overflow: hidden;
+}
+
+.activity-table th {
+background: linear-gradient(135deg, var(--info), #1e40af);
+color: var(--white);
+padding: 10px 8px;
+text-align: left;
+font-weight: 600;
+font-size: 12px;
+border-bottom: 2px solid var(--info);
+}
+
+.activity-table td {
+padding: 8px;
+border-bottom: 1px solid var(--secondary);
+font-size: 12px;
+}
+
+.activity-table tr:hover {
+background: var(--secondary);
+}
+
+.badge-primary {
+background: var(--primary);
+color: var(--white);
+padding: 3px 8px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+}
+
+.badge-secondary {
+background: var(--text-muted);
+color: var(--white);
+padding: 3px 8px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+}
+
+.badge-success {
+background: var(--success);
+color: var(--white);
+padding: 3px 8px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
+}
+
+.badge-warning {
+background: var(--warning);
+color: var(--white);
+padding: 3px 8px;
+border-radius: 12px;
+font-size: 11px;
+font-weight: 600;
 }
 .quick-actions-section h3, .business-insights-section h3 {
 color: var(--primary);
@@ -2989,40 +3439,6 @@ grid-template-columns: 1fr;
 </button>
 </div>
 </div>
-<div class="business-insights-section">
-<h3><i class="fas fa-chart-line"></i> Business Insights</h3>
-<div class="insights-grid">
-<div class="insight-card revenue">
-<div class="insight-icon"><i class="fas fa-peso-sign"></i></div>
-<div class="insight-content">
-<div class="insight-value" id="today-revenue">0</div>
-<div class="insight-label">Today's Revenue</div>
-</div>
-</div>
-<div class="insight-card pending">
-<div class="insight-icon"><i class="fas fa-clock"></i></div>
-<div class="insight-content">
-<div class="insight-value" id="pending-count">0</div>
-<div class="insight-label">Pending</div>
-</div>
-</div>
-<div class="insight-card completed">
-<div class="insight-icon"><i class="fas fa-check-circle"></i></div>
-<div class="insight-content">
-<div class="insight-value" id="completed-count">0</div>
-<div class="insight-label">Completed</div>
-</div>
-</div>
-<div class="insight-card growth">
-<div class="insight-icon"><i class="fas fa-arrow-trend-up"></i></div>
-<div class="insight-content">
-<div class="insight-value" id="growth-rate">0%</div>
-<div class="insight-label">Growth Rate</div>
-</div>
-</div>
-</div>
-</div>
-</div>
 <div class="dashboard-grid">
 <div>
 <!-- Today's Appointments -->
@@ -3483,72 +3899,146 @@ Next <i class="fas fa-chevron-right"></i>
 <section id="settings-page" class="page-section">
 <div class="page-header">
 <h1><i class="fas fa-cog"></i> Settings</h1>
-<p>Manage your account and preferences</p>
+<p>Manage your account and system preferences</p>
 </div>
-<div class="card">
-<h3><i class="fas fa-user-circle"></i> Account Settings</h3>
-<p style="color:var(--text-muted);margin-bottom:20px;">Manage your admin account settings</p>
-<div class="user-info" style="margin-bottom:20px;">
-<div class="user-avatar" style="width:60px;height:60px;font-size:24px;" id="settings-avatar">A</div>
-<div>
-<div style="font-weight:600;font-size:18px;" id="settings-email">Loading...</div>
-<div class="role-badge" style="margin-top:5px;">
-<i class="fas fa-crown"></i>
-<span>Administrator</span>
+
+<!-- System Settings List -->
+<div class="settings-section">
+<div class="settings-header">
+<h2><i class="fas fa-cog"></i> Settings</h2>
+<p>System configuration and management options</p>
+</div>
+<div class="settings-list">
+<div class="settings-item" onclick="openPriceEditingModal()">
+<div class="settings-icon">
+<i class="fas fa-tag"></i>
+</div>
+<div class="settings-content">
+<h4>Service Pricing</h4>
+<p>Edit prices and packages</p>
+<div class="settings-features">
+<span class="feature-tag">27 Services</span>
+</div>
+</div>
+<div class="settings-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+
+<div class="settings-item" onclick="alert('Coming soon')">
+<div class="settings-icon">
+<i class="fas fa-bell"></i>
+</div>
+<div class="settings-content">
+<h4>Notifications</h4>
+<p>System alerts</p>
+<div class="settings-features">
+<span class="feature-tag coming-soon">Soon</span>
+</div>
+</div>
+<div class="settings-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+
+<div class="settings-item" onclick="openEmployeeManagement()">
+<div class="settings-icon">
+<i class="fas fa-users-cog"></i>
+</div>
+<div class="settings-content">
+<h4>Employee Management</h4>
+<p>Manage staff accounts and permissions</p>
+<div class="settings-features">
+<span class="feature-tag">Active</span>
+</div>
+</div>
+<div class="settings-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+
+<div class="settings-item" onclick="alert('Coming soon')">
+<div class="settings-icon">
+<i class="fas fa-database"></i>
+</div>
+<div class="settings-content">
+<h4>Data Management</h4>
+<p>Backup & export</p>
+<div class="settings-features">
+<span class="feature-tag coming-soon">Soon</span>
+</div>
+</div>
+<div class="settings-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+
+<div class="settings-item" onclick="alert('Coming soon')">
+<div class="settings-icon">
+<i class="fas fa-palette"></i>
+</div>
+<div class="settings-content">
+<h4>Appearance</h4>
+<p>Themes & display</p>
+<div class="settings-features">
+<span class="feature-tag coming-soon">Soon</span>
+</div>
+</div>
+<div class="settings-arrow">
+<i class="fas fa-chevron-right"></i>
+</div>
+</div>
+
+<div class="settings-item" onclick="alert('Coming soon')">
+<div class="settings-icon">
+<i class="fas fa-plug"></i>
+</div>
+<div class="settings-content">
+<h4>Integrations</h4>
+<p>External services</p>
+<div class="settings-features">
+<span class="feature-tag coming-soon">Soon</span>
+</div>
+</div>
+<div class="settings-arrow">
+<i class="fas fa-chevron-right"></i>
 </div>
 </div>
 </div>
-<button class="btn btn-outline" onclick="window.location.replace('login.html')">
-<i class="fas fa-sign-out-alt"></i> Logout
-</button>
 </div>
-<div class="card" style="border: 2px solid var(--primary-light); background: linear-gradient(135deg, #fff, #fef8f9);">
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:25px;">
-<div>
-<h3><i class="fas fa-tag" style="color:var(--primary);"></i> Service Pricing Management</h3>
-<p style="color:var(--text-muted);margin-bottom:0;">Edit service prices, packages, and future pricing strategies</p>
-</div>
-<button class="btn btn-primary" onclick="openServicePricingEditor()" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark));">
-<i class="fas fa-edit"></i> Edit Service Prices
-</button>
-</div>
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px;">
-<div style="text-align:center;padding:15px;background:var(--secondary);border-radius:12px;">
-<div style="font-size:24px;font-weight:700;color:var(--primary);margin-bottom:5px;">
+
+<!-- Quick Stats -->
+<div class="settings-stats">
+<div class="stat-card">
+<div class="stat-icon">
 <i class="fas fa-coins"></i>
 </div>
-<div style="font-size:12px;color:var(--text-muted);">Pricing Control</div>
-</div>
-<div style="text-align:center;padding:15px;background:var(--secondary);border-radius:12px;">
-<div style="font-size:24px;font-weight:700;color:var(--info);margin-bottom:5px;">
-<i class="fas fa-box"></i>
-</div>
-<div style="font-size:12px;color:var(--text-muted);">Package Management</div>
-</div>
-<div style="text-align:center;padding:15px;background:var(--secondary);border-radius:12px;">
-<div style="font-size:24px;font-weight:700;color:var(--success);margin-bottom:5px;">
-<i class="fas fa-chart-line"></i>
-</div>
-<div style="font-size:12px;color:var(--text-muted);">Revenue Planning</div>
-</div>
-<div style="text-align:center;padding:15px;background:var(--secondary);border-radius:12px;">
-<div style="font-size:24px;font-weight:700;color:var(--warning);margin-bottom:5px;">
-<i class="fas fa-calendar-alt"></i>
-</div>
-<div style="font-size:12px;color:var(--text-muted);">Future Updates</div>
+<div class="stat-info">
+<h3>27</h3>
+<p>Total Services</p>
 </div>
 </div>
-<div style="background:linear-gradient(135deg,var(--secondary),var(--accent));padding:15px;border-radius:12px;">
-<div style="display:flex;align-items:center;gap:10px;">
-<i class="fas fa-info-circle" style="color:var(--primary);font-size:18px;"></i>
-<div style="flex:1;">
-<div style="font-weight:600;color:var(--text-dark);margin-bottom:3px;">Why pricing management matters</div>
-<div style="font-size:13px;color:var(--text-muted);line-height:1.5;">
-Easily adjust service prices, create special packages, and plan future pricing strategies to maximize revenue and stay competitive.
+<div class="stat-card">
+<div class="stat-icon">
+<i class="fas fa-layer-group"></i>
+</div>
+<div class="stat-info">
+<h3>4</h3>
+<p>Categories</p>
+</div>
+</div>
+<div class="stat-card">
+<div class="stat-icon">
+<i class="fas fa-shield-alt"></i>
+</div>
+<div class="stat-info">
+<h3>Admin</h3>
+<p>Access Level</p>
 </div>
 </div>
 </div>
-</div>
+</section>
+
 </div>
 </section>
 </main>
@@ -4251,6 +4741,155 @@ Easily adjust service prices, create special packages, and plan future pricing s
 </div>
 </div>
 
+<!-- ========== PRICE EDITING MODAL ========== -->
+<div id="price-editing-modal" class="modal-overlay hidden">
+<div class="modal-content" style="max-width:1200px;max-height:90vh;overflow-y:auto;">
+<div class="modal-header">
+<h3><i class="fas fa-tag"></i> Edit Service Prices</h3>
+<button class="modal-close" onclick="closePriceEditingModal()">&times;</button>
+</div>
+<div class="modal-body">
+<div id="price-editing-container">
+<!-- Price editing content will be loaded here -->
+</div>
+</div>
+<div class="modal-footer" style="display:flex;justify-content:center;align-items:center;padding:20px;border-top:1px solid var(--secondary);">
+<button class="btn btn-secondary" onclick="closePriceEditingModal()">Cancel</button>
+<button class="btn btn-primary" onclick="saveAllPriceChanges()">
+<i class="fas fa-save"></i> Save All Changes
+</button>
+</div>
+</div>
+</div>
+
+<!-- ========== EMPLOYEE MANAGEMENT MODAL ========== -->
+<div id="employee-management-modal" class="modal-overlay hidden">
+<div class="modal-content" style="max-width:1200px;max-height:90vh;overflow-y:auto;">
+<div class="modal-header">
+<h3><i class="fas fa-users-cog"></i> Employee Management</h3>
+<button class="modal-close" onclick="closeEmployeeManagement()">&times;</button>
+</div>
+<div class="modal-body">
+<div style="display:flex;gap:20px;margin-bottom:20px;">
+<button class="btn btn-primary" onclick="openAddEmployeeModal()">
+<i class="fas fa-plus"></i> Add Employee
+</button>
+<button class="btn btn-outline" onclick="refreshEmployeeList()">
+<i class="fas fa-sync"></i> Refresh
+</button>
+</div>
+
+<!-- Employee List -->
+<div class="card">
+<div class="card-header">
+<h3><i class="fas fa-users"></i> Employee Accounts</h3>
+</div>
+<div class="table-container">
+<table class="employee-table">
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Role</th>
+<th>Status</th>
+<th>Last Active</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody id="employee-list-body">
+<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+<i class="fas fa-users" style="font-size:48px;opacity:0.3;"></i>
+<span>Loading employees...</span>
+</div>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<!-- Recent Activity Logs -->
+<div class="card">
+<div class="card-header">
+<h3><i class="fas fa-history"></i> Recent Activity Logs</h3>
+</div>
+<div class="table-container">
+<table class="activity-table">
+<thead>
+<tr>
+<th>Date & Time</th>
+<th>Employee</th>
+<th>Action</th>
+<th>Details</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="employee-activity-body">
+<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+<i class="fas fa-history" style="font-size:48px;opacity:0.3;"></i>
+<span>Loading activity logs...</span>
+</div>
+</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="modal-footer" style="display:flex;justify-content:center;align-items:center;padding:20px;border-top:1px solid var(--secondary);">
+<button class="btn btn-secondary" onclick="closeEmployeeManagement()">Close</button>
+</div>
+</div>
+</div>
+
+<!-- ========== ADD EMPLOYEE MODAL ========== -->
+<div id="add-employee-modal" class="modal-overlay hidden">
+<div class="modal-content">
+<div class="modal-header">
+<h3><i class="fas fa-user-plus"></i> Add New Employee</h3>
+<button class="modal-close" onclick="closeAddEmployeeModal()">&times;</button>
+</div>
+<form id="add-employee-form">
+<div class="form-row">
+<div class="form-group">
+<label><i class="fas fa-asterisk"></i> Full Name *</label>
+<input type="text" id="new-employee-name" placeholder="e.g., Jane Smith" required>
+</div>
+<div class="form-group">
+<label><i class="fas fa-asterisk"></i> Email *</label>
+<input type="email" id="new-employee-email" placeholder="e.g., jane@clinic.com" required>
+</div>
+</div>
+<div class="form-row">
+<div class="form-group">
+<label><i class="fas fa-asterisk"></i> Role *</label>
+<select id="new-employee-role" required>
+<option value="">Select Role...</option>
+<option value="admin">Administrator</option>
+<option value="employee">Employee</option>
+</select>
+</div>
+<div class="form-group">
+<label><i class="fas fa-phone"></i> Contact Number</label>
+<input type="tel" id="new-employee-contact" placeholder="+63 912 345 6789">
+</div>
+</div>
+<div class="form-group">
+<label><i class="fas fa-briefcase"></i> Department</label>
+<input type="text" id="new-employee-department" placeholder="e.g., Aesthetics">
+</div>
+<div style="display:flex;gap:15px;justify-content:flex-end;margin-top:25px;">
+<button type="button" class="btn btn-outline" onclick="closeAddEmployeeModal()">
+<i class="fas fa-times"></i> Cancel
+</button>
+<button type="submit" class="btn btn-primary">
+<i class="fas fa-save"></i> Add Employee
+</button>
+</div>
+</form>
+</div>
+</div>
+
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
@@ -4324,9 +4963,10 @@ if (hour >= 12) greeting = 'Good afternoon';
 if (hour >= 17) greeting = 'Good evening';
 document.getElementById('welcome-message').textContent = `${greeting}, ${user.email.split('@')[0]}! Here's what's happening at your clinic today.`;
 document.getElementById('user-email').textContent = user.email;
-document.getElementById('settings-email').textContent = user.email;
-document.getElementById('user-avatar').textContent = (user.email || '?').charAt(0).toUpperCase();
-document.getElementById('settings-avatar').textContent = (user.email || '?').charAt(0).toUpperCase();
+const settingsEmailEl = document.getElementById('settings-email');
+if (settingsEmailEl) settingsEmailEl.textContent = user.email;
+const settingsAvatarEl = document.getElementById('settings-avatar');
+if (settingsAvatarEl) settingsAvatarEl.textContent = (user.email || '?').charAt(0).toUpperCase();
 setTimeout(async () => {
 authLoading.classList.add('hidden');
 setTimeout(async () => {
@@ -4765,11 +5405,9 @@ showSuggestions();
 
 
 
-// Dashboard Stats & Business Insights
+// Dashboard Stats
 function loadDashboardStats() {
 try {
-// Load Business Insights
-loadBusinessInsights();
 loadRecentClients();
 loadTopClients();
 loadTodayAppointments();
@@ -8722,6 +9360,9 @@ console.log('- DIODE LASER: 7 services');
 console.log('- EMSCULPT: 5 services');
 console.log('- PICO LUMINA: 7 services');
 
+// Store original prices for reset functionality
+storeOriginalPrices(cathServices);
+
 } catch (error) {
 console.error('Error initializing Cath Aesthetics services:', error);
 }
@@ -8814,8 +9455,522 @@ console.error('Error adding Pico Lumina services:', error);
 }
 }
 
+// Original Prices Management System
+let originalPrices = {};
+
+// Store original prices for all services
+function storeOriginalPrices(services) {
+try {
+services.forEach(service => {
+// Use service ID + name as key to handle services with same names in different categories
+const uniqueKey = `${service.id}_${service.name}`;
+originalPrices[uniqueKey] = {
+price: service.price,
+package_price: service.package_price,
+categoryId: service.category,
+serviceId: service.id
+};
+// Also store by name for backward compatibility
+originalPrices[service.name] = {
+price: service.price,
+package_price: service.package_price,
+categoryId: service.category,
+serviceId: service.id
+};
+});
+// Save to localStorage for persistence
+localStorage.setItem('cathOriginalPrices', JSON.stringify(originalPrices));
+console.log('Original prices stored for reset functionality');
+} catch (error) {
+console.error('Error storing original prices:', error);
+}
+}
+
+// Load original prices from localStorage
+function loadOriginalPrices() {
+try {
+const stored = localStorage.getItem('cathOriginalPrices');
+if (stored) {
+originalPrices = JSON.parse(stored);
+console.log('Original prices loaded from storage');
+}
+} catch (error) {
+console.error('Error loading original prices:', error);
+}
+}
+
+// Reset all services to original prices
+async function resetAllServicesToOriginalPrices() {
+if (!confirm('Are you sure you want to reset all service prices to their original values? This action cannot be undone.')) {
+return;
+}
+
+try {
+console.log('Resetting all services to original prices...');
+const servicesRef = collection(db, "services");
+const snapshot = await getDocs(servicesRef);
+const batch = writeBatch(db);
+
+let resetCount = 0;
+snapshot.forEach(doc => {
+const service = doc.data();
+const originalPrice = originalPrices[service.name];
+if (originalPrice) {
+batch.update(doc.ref, {
+price: originalPrice.price,
+package_price: originalPrice.package_price,
+updatedAt: new Date()
+});
+resetCount++;
+}
+});
+
+await batch.commit();
+console.log(`Successfully reset ${resetCount} services to original prices`);
+alert(`Successfully reset ${resetCount} services to their original prices!`);
+addActivity(`Reset ${resetCount} services to original prices`);
+} catch (error) {
+console.error('Error resetting prices:', error);
+alert('Failed to reset prices: ' + error.message);
+}
+}
+
+// Open price editing modal
+function openPriceEditingModal() {
+const modal = document.getElementById('price-editing-modal');
+const container = document.getElementById('price-editing-container');
+if (!container) return;
+
+let html = `
+<div class="price-editing-form">
+<div class="price-editing-header">
+<h4><i class="fas fa-tag"></i> Service Pricing Editor</h4>
+<p>Select a service to edit its pricing</p>
+</div>
+
+<div class="price-editing-controls">
+<div class="price-input-group">
+<label for="service-select">Select Service:</label>
+<div class="service-select-wrapper">
+<select id="service-select" onchange="loadServiceForEditing()" class="service-dropdown">
+<option value="">-- Choose a service --</option>
+`;
+
+// Group services by category for organized dropdown
+const grouped = {};
+allServices.forEach(service => {
+if (!grouped[service.category]) {
+grouped[service.category] = [];
+}
+grouped[service.category].push(service);
+});
+
+// Add services to dropdown with category grouping
+Object.keys(grouped).forEach(category => {
+const categoryIcons = {
+'diode': 'đ',
+'emsculpt': 'đ', 
+'aurelift': 'â¨',
+'pico': 'â'
+};
+html += `<optgroup label="${categoryIcons[category] || 'â¨'} ${category.toUpperCase()}">`;
+grouped[category].forEach(service => {
+html += `<option value="${service.id}">${escapeHtml(service.name)}</option>`;
+});
+html += `</optgroup>`;
+});
+
+html += `
+</select>
+</div>
+</div>
+
+<div id="service-editing-fields" style="display:none;">
+<!-- Service editing fields will be loaded here -->
+</div>
+
+</div>
+`;
+
+container.innerHTML = html;
+modal.classList.remove('hidden');
+setTimeout(() => modal.classList.add('active'), 10);
+}
+
+// Load selected service for editing
+window.loadServiceForEditing = function() {
+const select = document.getElementById('service-select');
+const serviceId = select.value;
+const editingFields = document.getElementById('service-editing-fields');
+const resetBtn = document.getElementById('reset-current-btn');
+
+if (!serviceId) {
+if (editingFields) editingFields.style.display = 'none';
+if (resetBtn) resetBtn.style.display = 'none';
+return;
+}
+
+const service = allServices.find(s => s.id === serviceId);
+if (!service) return;
+
+const originalPrice = originalPrices[service.name];
+
+editingFields.innerHTML = `
+<div class="service-editing-details">
+<h5><i class="fas fa-spa"></i> ${escapeHtml(service.name)}</h5>
+<div class="price-editing-inputs">
+<div class="price-input-group">
+<label for="edit-single-price">Single Session Price:</label>
+<div class="price-input-wrapper">
+<span class="currency">â±</span>
+<input type="number" id="edit-single-price" value="${service.price}" min="0" step="1">
+</div>
+${originalPrice ? `<small class="original-price">Original: â±${originalPrice.price}</small>` : ''}
+</div>
+
+<div class="price-input-group">
+<label for="edit-package-price">Package Price (${service.package_sessions || 4}+${service.free_sessions || 1}):</label>
+<div class="price-input-wrapper">
+<span class="currency">â±</span>
+<input type="number" id="edit-package-price" value="${service.package_price}" min="0" step="1">
+</div>
+${originalPrice ? `<small class="original-price">Original: â±${originalPrice.package_price}</small>` : ''}
+</div>
+</div>
+</div>
+`;
+
+if (editingFields) editingFields.style.display = 'block';
+if (resetBtn) resetBtn.style.display = service.name && originalPrice ? 'inline-block' : 'none';
+};
+
+// Reset current service price
+window.resetCurrentServicePrice = function() {
+const select = document.getElementById('service-select');
+const serviceId = select.value;
+const service = allServices.find(s => s.id === serviceId);
+if (!service) return;
+
+// Try to find original price by unique key first, then by name
+const uniqueKey = `${serviceId}_${service.name}`;
+let originalPrice = originalPrices[uniqueKey];
+if (!originalPrice) {
+originalPrice = originalPrices[service.name];
+}
+
+if (!originalPrice) {
+alert('Original price not found for this service');
+console.log('Available original prices:', Object.keys(originalPrices));
+console.log('Looking for:', uniqueKey, 'or', service.name);
+return;
+}
+
+if (!confirm(`Reset ${service.name} to original prices?`)) {
+return;
+}
+
+try {
+const singleInput = document.getElementById('edit-single-price');
+const packageInput = document.getElementById('edit-package-price');
+if (singleInput) singleInput.value = originalPrice.price;
+if (packageInput) packageInput.value = originalPrice.package_price;
+
+alert(`Reset ${service.name} to original prices`);
+console.log(`Reset ${service.name} from ${service.price}/${service.package_price} to ${originalPrice.price}/${originalPrice.package_price}`);
+} catch (error) {
+console.error('Error resetting service price:', error);
+alert('Failed to reset price: ' + error.message);
+}
+};
+
+// Reset individual service price
+async function resetServicePrice(serviceId, serviceName) {
+const originalPrice = originalPrices[serviceName];
+if (!originalPrice) {
+alert('Original price not found for this service');
+return;
+}
+
+if (!confirm(`Reset ${serviceName} to original prices?`)) {
+return;
+}
+
+try {
+const priceInput = document.getElementById(`price-${serviceId}`);
+const packagePriceInput = document.getElementById(`package-price-${serviceId}`);
+if (priceInput) priceInput.value = originalPrice.price;
+if (packagePriceInput) packagePriceInput.value = originalPrice.package_price;
+
+await updateDoc(doc(db, "services", serviceId), {
+price: originalPrice.price,
+package_price: originalPrice.package_price,
+updatedAt: new Date()
+});
+
+console.log(`Reset ${serviceName} to original prices`);
+addActivity(`Reset price for ${serviceName}`);
+} catch (error) {
+console.error('Error resetting service price:', error);
+alert('Failed to reset price: ' + error.message);
+}
+}
+
+// Save all price changes
+async function saveAllPriceChanges() {
+const select = document.getElementById('service-select');
+const serviceId = select.value;
+const singleInput = document.getElementById('edit-single-price');
+const packageInput = document.getElementById('edit-package-price');
+
+if (!serviceId || !singleInput || !packageInput) {
+alert('Please select a service and enter prices');
+return;
+}
+
+const service = allServices.find(s => s.id === serviceId);
+if (!service) return;
+
+const newPrice = parseFloat(singleInput.value);
+const newPackagePrice = parseFloat(packageInput.value);
+
+if (isNaN(newPrice) || isNaN(newPackagePrice) || newPrice < 0 || newPackagePrice < 0) {
+alert('Please enter valid prices (must be >= 0)');
+return;
+}
+
+if (service.price === newPrice && service.package_price === newPackagePrice) {
+alert('No price changes to save');
+return;
+}
+
+if (!confirm(`Update prices for ${service.name}?`)) {
+return;
+}
+
+try {
+await updateDoc(doc(db, "services", serviceId), {
+price: newPrice,
+package_price: newPackagePrice,
+updatedAt: new Date()
+});
+
+console.log(`Successfully updated prices for ${service.name}`);
+alert(`Successfully updated prices for ${service.name}!`);
+addActivity(`Updated prices for ${service.name}`);
+
+// Update local service data
+const localService = allServices.find(s => s.id === serviceId);
+if (localService) {
+localService.price = newPrice;
+localService.package_price = newPackagePrice;
+}
+
+} catch (error) {
+console.error('Error saving price changes:', error);
+alert('Failed to save price changes: ' + error.message);
+}
+}
+
+// Close price editing modal
+function closePriceEditingModal() {
+const modal = document.getElementById('price-editing-modal');
+modal.classList.remove('active');
+setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+// Load original prices on startup
+loadOriginalPrices();
+
 // Auto-merge landing page bookings on load
 mergeLandingPageBookings();
+
+// Make price editing functions globally accessible
+window.openPriceEditingModal = openPriceEditingModal;
+window.closePriceEditingModal = closePriceEditingModal;
+window.saveAllPriceChanges = saveAllPriceChanges;
+window.resetAllServicesToOriginalPrices = resetAllServicesToOriginalPrices;
+window.resetServicePrice = resetServicePrice;
+window.loadServiceForEditing = loadServiceForEditing;
+window.resetCurrentServicePrice = resetCurrentServicePrice;
+
+// Make employee management functions globally accessible
+window.openEmployeeManagement = openEmployeeManagement;
+window.closeEmployeeManagement = closeEmployeeManagement;
+window.openAddEmployeeModal = openAddEmployeeModal;
+window.closeAddEmployeeModal = closeAddEmployeeModal;
+window.refreshEmployeeList = refreshEmployeeList;
+window.loadEmployees = loadEmployees;
+window.loadEmployeeActivities = loadEmployeeActivities;
+window.editEmployee = editEmployee;
+window.deleteEmployee = deleteEmployee;
+
+// Employee Management Functions
+let allEmployees = [];
+let allEmployeeActivities = [];
+
+function openEmployeeManagement() {
+const modal = document.getElementById('employee-management-modal');
+modal.classList.remove('hidden');
+setTimeout(() => modal.classList.add('active'), 10);
+loadEmployees();
+loadEmployeeActivities();
+}
+
+function closeEmployeeManagement() {
+const modal = document.getElementById('employee-management-modal');
+modal.classList.remove('active');
+setTimeout(() => modal.classList.add('hidden'), 300);
+}
+
+function openAddEmployeeModal() {
+const modal = document.getElementById('add-employee-modal');
+modal.classList.remove('hidden');
+setTimeout(() => modal.classList.add('active'), 10);
+}
+
+function closeAddEmployeeModal() {
+const modal = document.getElementById('add-employee-modal');
+modal.classList.remove('active');
+setTimeout(() => modal.classList.add('hidden'), 300);
+document.getElementById('add-employee-form').reset();
+}
+
+function refreshEmployeeList() {
+loadEmployees();
+}
+
+function loadEmployees() {
+const tbody = document.getElementById('employee-list-body');
+if (!tbody) return;
+
+// Simulate employee data
+allEmployees = [
+{ id: '1', name: 'Admin User', email: 'admin@cath.com', role: 'admin', status: 'active', lastActive: new Date() },
+{ id: '2', name: 'Sarah Chen', email: 'sarah@cath.com', role: 'employee', status: 'active', lastActive: new Date(Date.now() - 3600000) },
+{ id: '3', name: 'Mike Johnson', email: 'mike@cath.com', role: 'employee', status: 'inactive', lastActive: new Date(Date.now() - 86400000) }
+];
+
+if (allEmployees.length === 0) {
+tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:30px;color:var(--text-muted);">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+<i class="fas fa-users" style="font-size:48px;opacity:0.3;"></i>
+<span>No employees found</span>
+</div>
+</td></tr>`;
+return;
+}
+
+tbody.innerHTML = '';
+allEmployees.forEach(employee => {
+const row = document.createElement('tr');
+row.innerHTML = `
+<td>${escapeHtml(employee.name)}</td>
+<td>${escapeHtml(employee.email)}</td>
+<td><span class="badge ${employee.role === 'admin' ? 'badge-primary' : 'badge-secondary'}">${employee.role}</span></td>
+<td><span class="badge ${employee.status === 'active' ? 'badge-success' : 'badge-warning'}">${employee.status}</span></td>
+<td>${formatDateTime(employee.lastActive)}</td>
+<td>
+<button class="btn btn-sm btn-outline" onclick="editEmployee('${employee.id}')">
+<i class="fas fa-edit"></i>
+</button>
+<button class="btn btn-sm btn-outline" onclick="deleteEmployee('${employee.id}')" style="margin-left:5px;">
+<i class="fas fa-trash"></i>
+</button>
+</td>
+`;
+tbody.appendChild(row);
+});
+}
+
+function loadEmployeeActivities() {
+const tbody = document.getElementById('employee-activity-body');
+if (!tbody) return;
+
+// Simulate activity data
+allEmployeeActivities = [
+{ employee: 'Admin User', action: 'Login', details: 'Admin dashboard access', status: 'success', timestamp: new Date() },
+{ employee: 'Sarah Chen', action: 'Appointment', details: 'Created new appointment for Jane Doe', status: 'success', timestamp: new Date(Date.now() - 1800000) },
+{ employee: 'Mike Johnson', action: 'Client Update', details: 'Updated client information', status: 'success', timestamp: new Date(Date.now() - 3600000) },
+{ employee: 'Admin User', action: 'Settings', details: 'Modified service pricing', status: 'success', timestamp: new Date(Date.now() - 7200000) }
+];
+
+if (allEmployeeActivities.length === 0) {
+tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:30px;color:var(--text-muted);">
+<div style="display:flex;flex-direction:column;align-items:center;gap:10px;">
+<i class="fas fa-history" style="font-size:48px;opacity:0.3;"></i>
+<span>No activity logs found</span>
+</div>
+</td></tr>`;
+return;
+}
+
+tbody.innerHTML = '';
+allEmployeeActivities.forEach(activity => {
+const row = document.createElement('tr');
+row.innerHTML = `
+<td>${formatDateTime(activity.timestamp)}</td>
+<td>${escapeHtml(activity.employee)}</td>
+<td>${escapeHtml(activity.action)}</td>
+<td>${escapeHtml(activity.details)}</td>
+<td><span class="badge badge-success">${activity.status}</span></td>
+`;
+tbody.appendChild(row);
+});
+}
+
+function editEmployee(employeeId) {
+alert(`Edit employee functionality for ID: ${employeeId}`);
+}
+
+function deleteEmployee(employeeId) {
+if (confirm('Are you sure you want to delete this employee?')) {
+alert(`Delete employee functionality for ID: ${employeeId}`);
+}
+}
+
+// Add employee form submission
+document.getElementById('add-employee-form')?.addEventListener('submit', async (e) => {
+e.preventDefault();
+const name = document.getElementById('new-employee-name').value;
+const email = document.getElementById('new-employee-email').value;
+const role = document.getElementById('new-employee-role').value;
+const contact = document.getElementById('new-employee-contact').value;
+const department = document.getElementById('new-employee-department').value;
+
+if (!name || !email || !role) {
+alert('Please fill in all required fields');
+return;
+}
+
+// Simulate adding employee
+const newEmployee = {
+id: Date.now().toString(),
+name,
+email,
+role,
+contact,
+department,
+status: 'active',
+lastActive: new Date()
+};
+
+allEmployees.push(newEmployee);
+loadEmployees();
+closeAddEmployeeModal();
+alert(`Employee ${name} added successfully!`);
+});
+
+function formatDateTime(date) {
+if (!date) return 'Never';
+const d = new Date(date);
+return d.toLocaleString('en-PH', { 
+month: 'short', 
+day: 'numeric', 
+year: 'numeric',
+hour: '2-digit',
+minute: '2-digit'
+});
+}
 
 console.log("Cath Aesthetics Admin Dashboard v5.0 - All features enabled!");
 console.log("Keyboard shortcuts enabled: ESC (close modals), Enter (submit forms/confirm), Ctrl+Enter (add client), Shift+Enter (add appointment)");
