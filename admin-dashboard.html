@@ -3203,6 +3203,9 @@ Next <i class="fas fa-chevron-right"></i>
 <button class="appointment-date-tab" data-service="aurelift" onclick="filterServicesByCategory('aurelift')">
 <i class="fas fa-sparkles"></i> AureLift
 </button>
+<button class="appointment-date-tab" data-service="pico" onclick="filterServicesByCategory('pico')">
+<i class="fas fa-sun"></i> Pico Lumina
+</button>
 </div>
 <div id="services-grid" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(350px, 1fr));gap:25px;">
 <div class="empty-state" style="grid-column:1/-1;">
@@ -4330,7 +4333,7 @@ setTimeout(async () => {
 authLoading.style.display = 'none';
 dashboardContent.style.display = 'block';
 try {
-await initializePresetServices();
+await initializeCathAestheticsServices(); // Add Cath Aesthetics services automatically
 loadClients();
 loadAppointments();
 loadServices();
@@ -4642,7 +4645,8 @@ function createServiceSuggestion(service) {
 const categoryIcons = {
 'diode': 'fa-laser',
 'emsculpt': 'fa-dumbbell',
-'aurelift': 'fa-sparkles'
+'aurelift': 'fa-sparkles',
+'pico': 'fa-sun'
 };
 
 return `
@@ -5543,7 +5547,8 @@ return;
 const grouped = {
 'diode': { name: '🔴 Diode Laser - Hair Removal', services: [] },
 'emsculpt': { name: '💪 EmSculpt - Muscle Sculpting', services: [] },
-'aurelift': { name: '✨ AureLift - Face & Body Contouring', services: [] }
+'aurelift': { name: '✨ AureLift - Face & Body Contouring', services: [] },
+'pico': { name: '✨ Pico Lumina - Advanced Picosecond Brightening Laser', services: [] }
 };
 allServices.forEach(service => {
 if (grouped[service.category]) {
@@ -5556,7 +5561,7 @@ if (grouped[category].services.length > 0) {
 html += `
 <div class="service-category-section">
 <div class="service-category-header">
-<i class="fas fa-${category === 'diode' ? 'laser' : category === 'emsculpt' ? 'dumbbell' : 'sparkles'}"></i>
+<i class="fas fa-${category === 'diode' ? 'laser' : category === 'emsculpt' ? 'dumbbell' : category === 'pico' ? 'sun' : 'sparkles'}"></i>
 <span>${grouped[category].name}</span>
 </div>
 `;
@@ -5734,7 +5739,7 @@ timeInput.value = now.toTimeString().substring(0, 5);
 const categories = [...new Set(allServices.map(s => s.category))];
 let html = categories.map(cat => {
 const servicesInCat = allServices.filter(s => s.category === cat);
-const categoryIcon = { 'diode': '🔴', 'emsculpt': '💪', 'aurelift': '✨' }[cat] || '✨';
+const categoryIcon = { 'diode': '', 'emsculpt': '', 'aurelift': '', 'pico': '' }[cat] || '';
 return `
 <div style="margin-bottom:20px;">
 <h5 style="margin-bottom:10px;color:var(--primary);font-weight:700;"><i>${categoryIcon}</i> ${cat.toUpperCase()}</h5>
@@ -6013,7 +6018,7 @@ servicesGrid.innerHTML = services.map(service => {
 const savingsAmount = service.package_price - service.price;
 const totalSessions = (service.package_sessions || 5) + (service.free_sessions || 1);
 const savingsPercent = Math.round((savingsAmount / service.package_price) * 100);
-const categoryIcons = { 'diode': '🔴', 'emsculpt': '💪', 'aurelift': '✨' };
+const categoryIcons = { 'diode': '', 'emsculpt': '', 'aurelift': '', 'pico': '' };
 return `
 <div class="service-card">
 <div class="service-header">
@@ -6092,35 +6097,10 @@ alert('✅ Service deleted successfully!');
 addActivity('Deleted a service');
 } catch (error) {
 console.error("Delete service error:", error);
-alert('❌ Failed to delete service: ' + error.message);
+alert(' Failed to delete service: ' + error.message);
 addActivity(`Error deleting service: ${error.message}`, true);
 }
 };
-
-async function initializePresetServices() {
-try {
-const servicesRef = collection(db, "services");
-const existingServices = await getDocs(servicesRef);
-if (existingServices.size > 0) return;
-const presetServices = [
-{ category: 'diode', name: 'Upper Lip & Lower Lip', price: 588, package_sessions: 5, package_price: 2888, free_sessions: 1, description: 'Hair removal for face' },
-{ category: 'diode', name: 'Underarm', price: 788, package_sessions: 5, package_price: 3888, free_sessions: 1, description: 'Underarm hair removal' },
-{ category: 'emsculpt', name: 'Tummy', price: 2588, package_sessions: 5, package_price: 10288, free_sessions: 1, description: 'Core and abdominal sculpting' },
-{ category: 'aurelift', name: 'Face', price: 988, package_sessions: 5, package_price: 3888, free_sessions: 1, description: 'Facial contouring and lifting' }
-];
-const batch = writeBatch(db);
-presetServices.forEach(service => {
-const docRef = doc(collection(db, "services"));
-batch.set(docRef, { ...service, createdAt: new Date(), updatedAt: new Date() });
-});
-await batch.commit();
-console.log('✅ Preset services initialized!');
-loadServices();
-} catch (error) {
-console.error("Initialize services error:", error);
-addActivity(`Error initializing services: ${error.message}`, true);
-}
-}
 
 // Inventory Management
 function loadInventory() {
@@ -8471,43 +8451,367 @@ console.error('Error merging landing page bookings:', error);
 }
 }
 
-// Helper functions for service mapping
-function getServiceName(serviceId) {
-if (!serviceId) return 'Unknown Service';
-const serviceMap = {
-'diode-single': 'Diode Laser - Single Session',
-'diode-package': 'Diode Laser - Package (6 Sessions)',
-'emsculpt-single': 'EmSculpt - Single Session',
-'emsculpt-package': 'EmSculpt - Package (6 Sessions)',
-'aurelift-single': 'AureLift - Single Session',
-'aurelift-package': 'AureLift - Package (6 Sessions)',
-'facial': 'Facial Treatment',
-'peeling': 'Chemical Peeling',
-'microdermabrasion': 'Microdermabrasion',
-'threading': 'Thread Lift',
-'meso': 'Mesotherapy',
-'detox': 'Detox Treatment'
-};
-return serviceMap[serviceId] || serviceId;
+// Automatic Service Initialization
+async function initializeCathAestheticsServices() {
+try {
+console.log('Initializing Cath Aesthetics services...');
+const servicesRef = collection(db, "services");
+const existingServices = await getDocs(servicesRef);
+
+// Check specifically for Pico Lumina services
+const picoServicesQuery = query(servicesRef, where("category", "==", "pico"));
+const picoSnapshot = await getDocs(picoServicesQuery);
+
+if (existingServices.size > 0 && picoSnapshot.size > 0) {
+console.log(`Found ${existingServices.size} existing services including ${picoSnapshot.size} Pico Lumina services, skipping initialization`);
+return;
 }
 
-function getServicePrice(serviceId) {
-if (!serviceId) return 3000;
-const priceMap = {
-'diode-single': 3500,
-'diode-package': 17500, // 5 sessions paid, 1 free
-'emsculpt-single': 8000,
-'emsculpt-package': 40000, // 5 sessions paid, 1 free
-'aurelift-single': 5000,
-'aurelift-package': 25000, // 5 sessions paid, 1 free
-'facial': 1500,
-'peeling': 2000,
-'microdermabrasion': 2500,
-'threading': 3000,
-'meso': 3500,
-'detox': 2000
-};
-return priceMap[serviceId] || 3000;
+if (existingServices.size > 0 && picoSnapshot.size === 0) {
+console.log(`Found ${existingServices.size} existing services but no Pico Lumina services, adding Pico Lumina services only...`);
+await addPicoLuminaServicesOnly();
+return;
+}
+
+const cathServices = [
+// AURE LIFT 88 - SIGNATURE FACE AND BODY CONTOURING
+{
+category: 'aurelift',
+name: 'HydraFacial with aurelift',
+price: 1988,
+package_sessions: 4,
+package_price: 7888,
+free_sessions: 1,
+description: 'HydraFacial with AureLift treatment for face and body contouring'
+},
+{
+category: 'aurelift',
+name: 'Face',
+price: 988,
+package_sessions: 4,
+package_price: 3888,
+free_sessions: 1,
+description: 'AureLift face contouring treatment'
+},
+{
+category: 'aurelift',
+name: 'Tummy',
+price: 1588,
+package_sessions: 4,
+package_price: 6288,
+free_sessions: 1,
+description: 'AureLift tummy contouring treatment'
+},
+{
+category: 'aurelift',
+name: 'Arms',
+price: 1488,
+package_sessions: 4,
+package_price: 5888,
+free_sessions: 1,
+description: 'AureLift arms contouring treatment'
+},
+{
+category: 'aurelift',
+name: 'Thigh',
+price: 1788,
+package_sessions: 4,
+package_price: 7088,
+free_sessions: 1,
+description: 'AureLift thigh contouring treatment'
+},
+{
+category: 'aurelift',
+name: 'Butt',
+price: 1588,
+package_sessions: 4,
+package_price: 6288,
+free_sessions: 1,
+description: 'AureLift butt contouring treatment'
+},
+
+// DIODE LASER - HAIR REMOVAL
+{
+category: 'diode',
+name: 'Upper lip and lower lip',
+price: 588,
+package_sessions: 4,
+package_price: 2888,
+free_sessions: 1,
+description: 'Diode laser hair removal for upper lip and lower lip'
+},
+{
+category: 'diode',
+name: 'Chin and Jaw',
+price: 788,
+package_sessions: 4,
+package_price: 3888,
+free_sessions: 1,
+description: 'Diode laser hair removal for chin and jaw area'
+},
+{
+category: 'diode',
+name: 'Underarm',
+price: 788,
+package_sessions: 4,
+package_price: 3888,
+free_sessions: 1,
+description: 'Diode laser hair removal for underarm'
+},
+{
+category: 'diode',
+name: 'Arms',
+price: 1988,
+package_sessions: 4,
+package_price: 9888,
+free_sessions: 1,
+description: 'Diode laser hair removal for arms'
+},
+{
+category: 'diode',
+name: 'Half Legs',
+price: 1988,
+package_sessions: 4,
+package_price: 9888,
+free_sessions: 1,
+description: 'Diode laser hair removal for half legs'
+},
+{
+category: 'diode',
+name: 'Full legs',
+price: 2588,
+package_sessions: 4,
+package_price: 12888,
+free_sessions: 1,
+description: 'Diode laser hair removal for full legs'
+},
+{
+category: 'diode',
+name: 'Brazilian',
+price: 1988,
+package_sessions: 4,
+package_price: 9888,
+free_sessions: 1,
+description: 'Diode laser hair removal for Brazilian area'
+},
+
+// EMSCULPT - MUSCLE SCULPTING
+{
+category: 'emsculpt',
+name: 'Arms',
+price: 1588,
+package_sessions: 4,
+package_price: 6288,
+free_sessions: 1,
+description: 'EmSculpt muscle sculpting for arms'
+},
+{
+category: 'emsculpt',
+name: 'Tummy',
+price: 2588,
+package_sessions: 4,
+package_price: 10288,
+free_sessions: 1,
+description: 'EmSculpt muscle sculpting for tummy'
+},
+{
+category: 'emsculpt',
+name: 'Butt',
+price: 2588,
+package_sessions: 4,
+package_price: 10288,
+free_sessions: 1,
+description: 'EmSculpt muscle sculpting for butt'
+},
+{
+category: 'emsculpt',
+name: 'Thighs',
+price: 2588,
+package_sessions: 4,
+package_price: 10288,
+free_sessions: 1,
+description: 'EmSculpt muscle sculpting for thighs'
+},
+{
+category: 'emsculpt',
+name: 'Legs',
+price: 1588,
+package_sessions: 4,
+package_price: 6288,
+free_sessions: 1,
+description: 'EmSculpt muscle sculpting for legs'
+},
+
+// PICO LUMINA - ADVANCED PICOSECOND BRIGHTENING LASER
+{
+category: 'pico',
+name: 'Facial Cleaning with Pico Lumina',
+price: 2498,
+package_sessions: 4,
+package_price: 9888,
+free_sessions: 1,
+description: 'Facial cleaning with advanced picosecond brightening laser'
+},
+{
+category: 'pico',
+name: 'Neck',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for neck area'
+},
+{
+category: 'pico',
+name: 'Nape',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for nape area'
+},
+{
+category: 'pico',
+name: 'Underarm',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for underarm area'
+},
+{
+category: 'pico',
+name: 'Elbow',
+price: 988,
+package_sessions: 4,
+package_price: 3988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for elbow area'
+},
+{
+category: 'pico',
+name: 'Bikini line',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for bikini line area'
+},
+{
+category: 'pico',
+name: 'Knees',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for knees area'
+}
+];
+
+const batch = writeBatch(db);
+cathServices.forEach(service => {
+const docRef = doc(collection(db, "services"));
+batch.set(docRef, { ...service, createdAt: new Date(), updatedAt: new Date() });
+});
+
+await batch.commit();
+console.log(`Successfully initialized ${cathServices.length} Cath Aesthetics services`);
+console.log('Services added by category:');
+console.log('- AURE LIFT 88: 6 services');
+console.log('- DIODE LASER: 7 services');
+console.log('- EMSCULPT: 5 services');
+console.log('- PICO LUMINA: 7 services');
+
+} catch (error) {
+console.error('Error initializing Cath Aesthetics services:', error);
+}
+}
+
+// Add only Pico Lumina services
+async function addPicoLuminaServicesOnly() {
+try {
+const picoServices = [
+{
+category: 'pico',
+name: 'Facial Cleaning with Pico Lumina',
+price: 2498,
+package_sessions: 4,
+package_price: 9888,
+free_sessions: 1,
+description: 'Facial cleaning with advanced picosecond brightening laser'
+},
+{
+category: 'pico',
+name: 'Neck',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for neck area'
+},
+{
+category: 'pico',
+name: 'Nape',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for nape area'
+},
+{
+category: 'pico',
+name: 'Underarm',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for underarm area'
+},
+{
+category: 'pico',
+name: 'Elbow',
+price: 988,
+package_sessions: 4,
+package_price: 3988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for elbow area'
+},
+{
+category: 'pico',
+name: 'Bikini line',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for bikini line area'
+},
+{
+category: 'pico',
+name: 'Knees',
+price: 1498,
+package_sessions: 4,
+package_price: 5988,
+free_sessions: 1,
+description: 'Pico Lumina treatment for knees area'
+}
+];
+
+const batch = writeBatch(db);
+picoServices.forEach(service => {
+const docRef = doc(collection(db, "services"));
+batch.set(docRef, { ...service, createdAt: new Date(), updatedAt: new Date() });
+});
+
+await batch.commit();
+console.log(`Successfully added ${picoServices.length} Pico Lumina services`);
+console.log('Pico Lumina services added:');
+picoServices.forEach(service => {
+console.log(`- ${service.name}: Per ${service.price}, Package ${service.package_price}`);
+});
+
+} catch (error) {
+console.error('Error adding Pico Lumina services:', error);
+}
 }
 
 // Auto-merge landing page bookings on load
@@ -8519,7 +8823,6 @@ console.log("Landing page booking integration enabled");
 </script>
 </body>
 </html>
-
 
 
 
