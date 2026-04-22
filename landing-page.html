@@ -175,7 +175,47 @@
             50% { transform: translateY(-20px); }
         }
 
-       
+        /* Scroll to Top Button */
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(212, 165, 181, 0.3);
+        }
+
+        .scroll-to-top:hover {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(212, 165, 181, 0.4);
+        }
+
+        .scroll-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .scroll-to-top i {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .scroll-to-top:hover i {
+            transform: translateY(-2px);
+        }
 
         /* Header Navigation */
         .header {
@@ -1390,6 +1430,14 @@
         </nav>
     </header>
     
+    <!-- Scroll Progress Bar -->
+    <div class="scroll-progress" id="scrollProgress"></div>
+    
+    <!-- Scroll to Top Button -->
+    <button class="scroll-to-top" id="scrollToTop" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+    
     <!-- Parallax Background -->
     <div class="parallax-bg" id="parallaxBg"></div>
     
@@ -1961,7 +2009,9 @@
         // Scroll Progress Bar
         const scrollProgress = document.getElementById('scrollProgress');
         const parallaxBg = document.getElementById('parallaxBg');
-      // Scroll animations and header effects
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        
+        // Scroll animations and header effects
         window.addEventListener('scroll', function() {
             const scrolled = window.pageYOffset;
             const header = document.getElementById('header');
@@ -1984,6 +2034,13 @@
                 header.classList.add('scrolled');
             }
             
+            // Show/hide scroll to top button
+            if (scrolled > 300) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+            
             // Enhanced parallax effect
             parallaxBg.style.transform = `translateY(${scrolled * 0.3}px)`;
             
@@ -1992,6 +2049,14 @@
             shapes.forEach((shape, index) => {
                 const speed = 0.5 + (index * 0.1);
                 shape.style.transform = `translateY(${scrolled * speed}px)`;
+            });
+        });
+
+        // Scroll to top functionality
+        scrollToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
             });
         });
         
