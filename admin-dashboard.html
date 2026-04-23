@@ -6180,11 +6180,12 @@ Filter:
 <th>Staff</th>
 <th>M.O.P</th>
 <th>Amount</th>
+<th>Products</th>
 <th>Notes</th>
 </tr>
 </thead>
 <tbody id="detail-treatments-body">
-<tr><td colspan="8" style="text-align:center;padding:20px;">No treatments yet</td></tr>
+<tr><td colspan="9" style="text-align:center;padding:20px;">No treatments yet</td></tr>
 </tbody>
 </table>
 </div>
@@ -6530,10 +6531,26 @@ Filter:
 <th style="padding:8px;text-align:left;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Staff</th>
 <th style="padding:8px;text-align:center;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">M.O.P</th>
 <th style="padding:8px;text-align:right;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Amount</th>
+<th style="padding:8px;text-align:left;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Products</th>
 <th style="padding:8px;text-align:left;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Notes</th>
 </tr>
 </thead>
 <tbody id="print-treatments-body">
+</tbody>
+</table>
+</div>
+<div class="printable-section" style="margin-bottom:30px;">
+<h3 style="color:#d4a5b5;border-bottom:2px solid #f5e6e8;padding-bottom:12px;margin-bottom:20px;font-size:20px;font-weight:600;letter-spacing:0.5px;"><i class="fas fa-box" style="margin-right:8px;"></i> Products Purchased</h3>
+<table class="printable-table" style="width:100%;border-collapse:collapse;margin-top:15px;font-size:12px;">
+<thead>
+<tr>
+<th style="padding:8px;text-align:left;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Date</th>
+<th style="padding:8px;text-align:left;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Product Name</th>
+<th style="padding:8px;text-align:right;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Price</th>
+<th style="padding:8px;text-align:left;border-bottom:2px solid #d4a5b5;background:linear-gradient(135deg,#f5e6e8,#edd4da);font-weight:600;color:#5a4a5a;">Appointment</th>
+</tr>
+</thead>
+<tbody id="print-products-body">
 </tbody>
 </table>
 </div>
@@ -8058,10 +8075,9 @@ showSuggestions();
 
 // Create client suggestion HTML
 function createClientSuggestion(client) {
-const totalVisits = allAppointments.filter(a => a.clientId === client.id).length;
-const totalSpent = allAppointments
-.filter(a => a.clientId === client.id && a.status === 'completed')
-.reduce((sum, a) => sum + (a.amountPaid || a.price || 0), 0);
+// Use the already calculated values from client data for consistency
+const totalVisits = client.totalVisits || 0;
+const totalSpent = client.totalSpent || 0;
 
 return `
 <div class="search-suggestion-item" onclick="handleClientSearchClick('${client.id}')">
@@ -8251,7 +8267,25 @@ const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 1);
 const todayRevenueEl = document.getElementById('today-revenue');
 if (todayRevenueEl) {
 const todayAppts = allAppointments.filter(a => a.date === today && a.status === 'completed');
-const todayRevenue = todayAppts.reduce((sum, a) => sum + (a.amountPaid || a.price || 0), 0);
+
+// Calculate accurate revenue including services + products (same as client total calculations)
+let todayRevenue = 0;
+todayAppts.forEach(appointment => {
+  // Add services total
+  if (appointment.services && Array.isArray(appointment.services)) {
+    const servicesTotal = appointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+    todayRevenue += servicesTotal;
+  } else if (appointment.price) {
+    todayRevenue += appointment.price;
+  }
+  
+  // Add products total
+  if (appointment.products && Array.isArray(appointment.products)) {
+    const productsTotal = appointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+    todayRevenue += productsTotal;
+  }
+});
+
 todayRevenueEl.textContent = `?${todayRevenue.toLocaleString('en-PH', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
 }
 
@@ -8283,8 +8317,40 @@ const apptDate = new Date(a.date);
 return apptDate >= lastMonthStart && apptDate < lastMonthEnd;
 });
 
-const thisMonthRevenue = thisMonthCompleted.reduce((sum, a) => sum + (a.amountPaid || a.price || 0), 0);
-const lastMonthRevenue = lastMonthCompleted.reduce((sum, a) => sum + (a.amountPaid || a.price || 0), 0);
+// Calculate accurate monthly revenue including services + products (same as client total calculations)
+let thisMonthRevenue = 0;
+thisMonthCompleted.forEach(appointment => {
+  // Add services total
+  if (appointment.services && Array.isArray(appointment.services)) {
+    const servicesTotal = appointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+    thisMonthRevenue += servicesTotal;
+  } else if (appointment.price) {
+    thisMonthRevenue += appointment.price;
+  }
+  
+  // Add products total
+  if (appointment.products && Array.isArray(appointment.products)) {
+    const productsTotal = appointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+    thisMonthRevenue += productsTotal;
+  }
+});
+
+let lastMonthRevenue = 0;
+lastMonthCompleted.forEach(appointment => {
+  // Add services total
+  if (appointment.services && Array.isArray(appointment.services)) {
+    const servicesTotal = appointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+    lastMonthRevenue += servicesTotal;
+  } else if (appointment.price) {
+    lastMonthRevenue += appointment.price;
+  }
+  
+  // Add products total
+  if (appointment.products && Array.isArray(appointment.products)) {
+    const productsTotal = appointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+    lastMonthRevenue += productsTotal;
+  }
+});
 
 let growthRate = 0;
 if (lastMonthRevenue > 0) {
@@ -8340,11 +8406,12 @@ return `
 
 function loadTopClients() {
 const container = document.getElementById('top-clients-container');
-const clientSpending = allClients.map(client => {
-const totalSpent = allAppointments.filter(a => a.clientId === client.id)
-.reduce((sum, a) => sum + (a.amountPaid || a.price || 0), 0);
-return { ...client, totalSpent };
-}).filter(c => c.totalSpent > 0).sort((a, b) => b.totalSpent - a.totalSpent).slice(0, 5);
+// Use the already calculated totalSpent from client data for consistency
+const clientSpending = allClients
+  .map(client => ({ ...client, totalSpent: client.totalSpent || 0 }))
+  .filter(c => c.totalSpent > 0)
+  .sort((a, b) => b.totalSpent - a.totalSpent)
+  .slice(0, 5);
 if (clientSpending.length === 0) {
 container.innerHTML = '<p style="text-align: center; color: var(--text-muted); padding: 30px;">No spending data yet</p>';
 return;
@@ -8519,9 +8586,10 @@ const dateStr = date.toISOString().split('T')[0];
 const dayName = date.toLocaleDateString('en-PH', { weekday: 'short' });
 weekDays.push(dayName);
 
-const dayRevenue = allAppointments
-.filter(a => a.date === dateStr && a.status === 'completed')
-.reduce((sum, a) => sum + (a.amountPaid || a.price || 0), 0);
+const dayAppts = allAppointments.filter(a => a.date === dateStr && a.status === 'completed');
+
+// Calculate accurate daily revenue using centralized function
+const dayRevenue = RevenueCalculator.calculateTotalRevenue(dayAppts);
 revenueData.push(dayRevenue);
 }
 
@@ -8608,13 +8676,99 @@ if (!clientGrid) return;
 onSnapshot(collection(db, "clients"), async (snapshot) => {
 allClients = [];
 clientIds = new Set();
-for (const docSnap of snapshot.docs) {
-const client = docSnap.data();
-const treatmentsSnapshot = await getDocs(collection(db, "clients", docSnap.id, "treatments"));
-const totalVisits = treatmentsSnapshot.size;
-const totalSpent = treatmentsSnapshot.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
-allClients.push({ id: docSnap.id, ...client, totalVisits, totalSpent });
-clientIds.add(docSnap.id);
+const clientDocs = snapshot.docs;
+
+// Batch 1: Get all treatments for all clients in parallel
+const treatmentPromises = clientDocs.map(docSnap => 
+  getDocs(collection(db, "clients", docSnap.id, "treatments"))
+    .catch(e => {
+      console.warn(`Treatments fetch warning for client ${docSnap.id}:`, e);
+      return { docs: [] }; // Return empty result if failed
+    })
+);
+
+const treatmentSnapshots = await Promise.all(treatmentPromises);
+
+// Batch 2: Get all appointments for all clients in one query (more efficient)
+const allClientIds = clientDocs.map(doc => doc.id);
+const appointmentsSnapshot = await getDocs(query(
+  collection(db, "appointments"), 
+  where("clientId", "in", allClientIds)
+));
+
+// Create a lookup map for appointments
+const appointmentsMap = new Map();
+appointmentsSnapshot.docs.forEach(doc => {
+  const appointment = doc.data();
+  const key = `${appointment.clientId}_${appointment.date}_${appointment.time || ''}`;
+  appointmentsMap.set(key, { id: doc.id, ...appointment });
+});
+
+// Process each client with the batched data
+for (let i = 0; i < clientDocs.length; i++) {
+  const docSnap = clientDocs[i];
+  const client = docSnap.data();
+  const treatmentsSnapshot = treatmentSnapshots[i];
+  const totalVisits = treatmentsSnapshot.size;
+
+  // Calculate total spent from treatments using the pre-fetched appointments
+  let actualTotalSpent = 0;
+  try {
+    const treatments = treatmentsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    
+    for (const treatment of treatments) {
+      let treatmentAmount = 0;
+      
+      // Find corresponding appointment using the lookup map (much faster)
+      const appointmentKey = `${docSnap.id}_${treatment.date}_${treatment.time || ''}`;
+      const appointment = appointmentsMap.get(appointmentKey);
+      
+      if (appointment) {
+        // Calculate actual amount from services + products (same as client detail calculation)
+        let servicesTotal = 0;
+        if (appointment.services && Array.isArray(appointment.services)) {
+          servicesTotal = appointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+        } else if (appointment.price) {
+          servicesTotal = appointment.price;
+        }
+        
+        let productsTotal = 0;
+        if (appointment.products && Array.isArray(appointment.products)) {
+          productsTotal = appointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+        }
+        
+        treatmentAmount = servicesTotal + productsTotal;
+      } else {
+        // Fallback to treatment amount if appointment not found
+        treatmentAmount = treatment.amount || 0;
+      }
+      
+      actualTotalSpent += treatmentAmount;
+    }
+  } catch (e) {
+    // Improved error handling with specific error types
+    if (e.message.includes('network')) {
+      console.warn("Network error in total spent calculation - using fallback:", e.message);
+    } else if (e.message.includes('permission')) {
+      console.warn("Permission error in total spent calculation - using fallback:", e.message);
+    } else {
+      console.warn("Unexpected error in total spent calculation:", e);
+    }
+    
+    // Better fallback with validation
+    try {
+      actualTotalSpent = treatmentsSnapshot.docs.reduce((sum, doc) => {
+        const amount = doc.data()?.amount;
+        return sum + (typeof amount === 'number' && amount > 0 ? amount : 0);
+      }, 0);
+    } catch (fallbackError) {
+      console.error("Even fallback calculation failed:", fallbackError);
+      actualTotalSpent = 0; // Ultimate fallback
+    }
+  }
+
+  allClients.push({ id: docSnap.id, ...client, totalVisits, totalSpent: actualTotalSpent });
+  clientIds.add(docSnap.id);
 }
 applyClientFilter();
 updateClientOverview();
@@ -8750,27 +8904,57 @@ btn.classList.add('active');
 // Add Client Modal
 window.openAddClientModal = () => {
 const modal = document.getElementById('add-client-modal');
+ModalManager.registerModal('add-client-modal');
 modal.classList.remove('hidden');
 setTimeout(() => { modal.classList.add('active'); }, 10);
 };
 
 window.closeAddClientModal = () => {
-const modal = document.getElementById('add-client-modal');
-modal.classList.remove('active');
-setTimeout(() => { modal.classList.add('hidden'); }, 300);
 document.getElementById('add-client-form').reset();
+ModalManager.closeModal('add-client-modal');
 };
 
 document.getElementById('close-add-client-modal')?.addEventListener('click', closeAddClientModal);
 
 document.getElementById('add-client-form')?.addEventListener('submit', async (e) => {
 e.preventDefault();
-const name = document.getElementById('new-client-name').value.trim();
-const contactNumber = document.getElementById('new-client-contact').value.trim();
-const address = document.getElementById('new-client-address').value.trim();
-const birthDateInput = document.getElementById('new-client-birthdate').value;
-const medicalHistory = document.getElementById('new-client-medical').value.trim();
-if (!name || !contactNumber) { alert('⚠️ Name and Contact are required!'); return; }
+  
+  // Clear previous errors
+  FormValidator.clearFormErrors('add-client-form');
+  
+  // Validate form using centralized system
+  const validationRules = {
+    'new-client-name': [
+      { type: 'required' },
+      { type: 'name' }
+    ],
+    'new-client-contact': [
+      { type: 'required' },
+      { type: 'phone' }
+    ],
+    'new-client-address': [
+      { type: 'text' }
+    ],
+    'new-client-medical': [
+      { type: 'notes' }
+    ]
+  };
+  
+  const validation = FormValidator.validateForm('add-client-form', validationRules);
+  
+  if (!validation.isValid) {
+    // Show summary of errors
+    const errorCount = Object.keys(validation.errors).length;
+    alert(`⚠️ Please fix ${errorCount} error${errorCount > 1 ? 's' : ''} before submitting.`);
+    return;
+  }
+  
+  // Get validated data
+  const name = document.getElementById('new-client-name').value.trim();
+  const contactNumber = document.getElementById('new-client-contact').value.trim();
+  const address = document.getElementById('new-client-address').value.trim();
+  const birthDateInput = document.getElementById('new-client-birthdate').value;
+  const medicalHistory = document.getElementById('new-client-medical').value.trim();
 try {
 const clientData = { name, contactNumber, address, createdAt: new Date(), updatedAt: new Date() };
 if (birthDateInput) clientData.birthDate = new Date(birthDateInput);
@@ -8850,8 +9034,58 @@ renderCalendar();
 window.selectCalendarDate = (dateStr) => {
 currentPopupDate = dateStr;
 selectedCalendarDate = dateStr; // Set selected calendar date
-// Automatically open appointment modal with selected date (like walk-in functionality)
-openAddAppointmentModalWithDate(dateStr);
+const dateObj = new Date(dateStr);
+const dateDisplay = dateObj.toLocaleDateString('en-PH', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+document.getElementById('popup-date-display').textContent = dateDisplay;
+const dayAppointments = allAppointments.filter(a => a.date === dateStr);
+const contentContainer = document.getElementById('appointment-popup-content');
+if (dayAppointments.length === 0) {
+contentContainer.innerHTML = '<p style="text-align:center;color:var(--text-muted);padding:30px;">No appointments for this date</p>';
+} else {
+contentContainer.innerHTML = dayAppointments.map(appt => {
+const servicesList = appt.services && appt.services.length > 0
+? appt.services.map(s => `<div class="popup-service-item"><i class="fas fa-check-circle"></i> ${escapeHtml(s.name || 'Service')} - ₱${Math.round(s.price)}</div>`).join('')
+: `<div class="popup-service-item"><i class="fas fa-spa"></i> ${escapeHtml(appt.service || 'Service')}</div>`;
+const paymentInfo = appt.isPartialPayment
+? `<div style="margin-top:6px;padding:8px;background:#fff3cd;border-radius:8px;border-left:3px solid #ffc107;">
+    <strong style="color:#856404;">⚠️ Partial Payment:</strong> ₱${Math.round(appt.amountPaid)} paid | ₱${Math.round(appt.remainingBalance || 0)} balance
+    ${appt.remainingBalance > 0 ? '<br><small style="color:#856404;">📝 Process remaining payment to generate receipt</small>' : '<br><small style="color:#28a745;">✅ Fully Paid - Receipt Available</small>'}
+   </div>`
+: '';
+const notesInfo = appt.notes ? `<div style="margin-top:8px;padding:8px;background:linear-gradient(135deg,#dbeafe,#e0f2fe);border-radius:8px;border-left:3px solid #3b82f6;"><strong style="color:#1e40af;">📝 Notes:</strong> ${escapeHtml(appt.notes)}</div>` : '';
+return `
+<div class="appointment-popup-item">
+<div class="popup-client-name"><i class="fas fa-user-circle"></i> ${escapeHtml(appt.clientName || 'Unknown')}</div>
+<div class="popup-service-list">${servicesList}</div>
+<div class="popup-time"><i class="fas fa-clock"></i> ${appt.time || '--:--'}</div>
+<div class="popup-price"><i class="fas fa-peso-sign"></i> Total: <strong>₱${Math.round(appt.price || 0).toLocaleString()}</strong></div>
+${paymentInfo}
+${notesInfo}
+<span class="popup-status badge ${getStatusClass(appt.status)}">${appt.status || 'pending'}</span>
+<div class="popup-actions">
+<button class="btn btn-sm btn-primary" onclick="event.stopPropagation();openAppointmentDetailsModal('${appt.id}')"><i class="fas fa-receipt"></i> View Details</button>
+<button class="btn btn-sm btn-info" onclick="event.stopPropagation();viewClientDetailFromPopup('${appt.clientId}')"><i class="fas fa-user-circle"></i> Client</button>
+${
+  (appt.status === 'completed')
+    ? `<button class="btn btn-sm btn-success" disabled style="opacity:.75;cursor:not-allowed;"><i class="fas fa-check-double"></i> Completed</button>
+       ${(!appt.isPartialPayment || (appt.remainingBalance || 0) <= 0) 
+         ? `<button class="btn btn-sm btn-outline" onclick="event.stopPropagation();printAppointmentReceipt('${appt.id}')"><i class="fas fa-print"></i> Receipt</button>`
+         : `<button class="btn btn-sm btn-warning" onclick="event.stopPropagation();processAdditionalPayment('${appt.id}', '${escapeHtml(appt.clientName)}', ${appt.remainingBalance || 0}, '${escapeHtml(appt.mop || appt.paymentMethod || '')}')"><i class="fas fa-credit-card"></i> Pay Balance</button>`
+       }`
+    : (appt.status === 'cancelled')
+      ? `<button class="btn btn-sm btn-danger" disabled style="opacity:.75;cursor:not-allowed;"><i class="fas fa-times-circle"></i> Cancelled</button>
+         <button class="btn btn-sm btn-outline" onclick="event.stopPropagation();quickUpdateStatus('${appt.id}', 'pending')"><i class="fas fa-undo"></i> Restore</button>`
+      : `<button class="btn btn-sm btn-outline" onclick="event.stopPropagation();quickUpdateStatus('${appt.id}', 'completed')"><i class="fas fa-check"></i> Mark Complete</button>
+         <button class="btn btn-sm btn-danger" onclick="event.stopPropagation();cancelAppointmentFromPopup('${appt.id}', '${escapeHtml(appt.clientName)}')"><i class="fas fa-times"></i> Cancel</button>`
+  }
+</div>
+</div>
+`;
+}).join('');
+}
+const modal = document.getElementById('appointment-date-popup');
+modal.classList.remove('hidden');
+setTimeout(() => { modal.classList.add('active'); }, 10);
 };
 
 window.cancelAppointmentFromPopup = (appointmentId, clientName) => {
@@ -8883,10 +9117,10 @@ window.closeAppointmentDatePopup = () => {
 const modal = document.getElementById('appointment-date-popup');
 modal.classList.remove('active');
 setTimeout(() => { modal.classList.add('hidden'); }, 300);
-currentPopupDate = null;
 };
 
 window.openAddAppointmentModalFromPopup = () => {
+console.log('openAddAppointmentModalFromPopup called, currentPopupDate:', currentPopupDate);
 closeAppointmentDatePopup();
 setTimeout(() => {
 openAddAppointmentModalWithDate(currentPopupDate);
@@ -8920,10 +9154,25 @@ const dateInput = document.getElementById('modal-appointment-date');
 if (dateInput) {
 dateInput.value = dateString;
 console.log('Date input found and set to:', dateString);
+// Double-check after another delay
+setTimeout(() => {
+if (dateInput.value !== dateString) {
+dateInput.value = dateString;
+console.log('Date input reset to:', dateString);
+}
+}, 100);
 } else {
 console.log('Date input not found!');
+// Try again after a longer delay
+setTimeout(() => {
+const retryInput = document.getElementById('modal-appointment-date');
+if (retryInput) {
+retryInput.value = dateString;
+console.log('Date input found on retry and set to:', dateString);
 }
-}, 100); // Increased delay to ensure modal is fully rendered
+}, 200);
+}
+}, 300); // Increased delay to ensure modal is fully rendered
 };
 
 window.viewClientDetailFromPopup = async (clientId) => {
@@ -9337,6 +9586,10 @@ isPackage: serviceType === 'package' // Add package flag
 };
 try {
 const docRef = await addDoc(collection(db, "appointments"), appointmentData);
+
+// Note: Stock reduction will happen when appointment is completed, not when created
+// This prevents double-reduction and ensures stock is only reduced when actually sold
+
 // Firebase listener will automatically update the calendar
 // If the user is viewing the same date popup, refresh its contents immediately.
 if (typeof currentPopupDate !== 'undefined' && currentPopupDate && currentPopupDate === appointmentDate) {
@@ -9485,6 +9738,37 @@ createdAt: new Date(),
 updatedAt: new Date()
 };
 await addDoc(collection(db, "appointments"), appointmentData);
+
+// Reduce product stock for walk-in appointments if products are included
+// Note: Currently walk-in appointments don't include products, but this handles future implementation
+if (appointmentData.products && appointmentData.products.length > 0) {
+  try {
+    for (const product of appointmentData.products) {
+      const productRef = doc(db, "inventory", product.id);
+      const productDoc = await getDoc(productRef);
+      
+      if (productDoc.exists()) {
+        const currentProduct = productDoc.data();
+        const newQuantity = Math.max(0, (currentProduct.quantity || 0) - 1);
+        
+        await updateDoc(productRef, {
+          quantity: newQuantity,
+          updatedAt: new Date()
+        });
+        
+        console.log(`Stock reduced for walk-in: ${product.name} (${currentProduct.quantity} → ${newQuantity})`);
+        addActivity(`Stock reduced: ${product.name} (${currentProduct.quantity} → ${newQuantity})`);
+      }
+    }
+    
+    // Refresh inventory display
+    loadInventory();
+  } catch (stockError) {
+    console.error("Stock reduction error for walk-in:", stockError);
+    addActivity(`Warning: Stock reduction failed - ${stockError.message}`, true);
+  }
+}
+
 const treatmentData = {
 date: new Date(date),
 time: time,
@@ -9532,9 +9816,11 @@ addActivity(`Error viewing client: ${error.message}`, true);
 };
 
 function loadClientTreatments(clientId) {
+console.log(`🚀 DEBUG: Loading treatments for client ${clientId}`);
 const tableBody = document.getElementById('detail-treatments-body');
 if (!tableBody) return;
-onSnapshot(collection(db, "clients", clientId, "treatments"), (snapshot) => {
+onSnapshot(collection(db, "clients", clientId, "treatments"), async (snapshot) => {
+console.log(`📋 DEBUG: Treatments snapshot received, size: ${snapshot.size}`);
 tableBody.innerHTML = "";
 if (snapshot.empty) {
 tableBody.innerHTML = `<tr><td colspan="8" style="text-align:center;padding:20px;">No treatments yet</td></tr>`;
@@ -9543,12 +9829,141 @@ document.getElementById('detail-spent').textContent = '₱0';
 return;
 }
 const totalVisits = snapshot.size;
-const totalSpent = snapshot.docs.reduce((sum, doc) => sum + (doc.data().amount || 0), 0);
+
+// Calculate total spent from treatments (same data as treatment history) to ensure consistency
+let actualTotalSpent = 0;
+const treatmentDataForTotal = [];
+
+// Get all appointments for this client once (more efficient)
+console.log(`🔍 DEBUG: Fetching appointments for client ${clientId}`);
+const allAppointmentsSnapshot = await getDocs(query(collection(db, "appointments"), where("clientId", "==", clientId)));
+const allAppointments = [];
+allAppointmentsSnapshot.forEach(doc => {
+  const appointment = { id: doc.id, ...doc.data() };
+  allAppointments.push(appointment);
+});
+
+console.log(`📊 DEBUG: Found ${allAppointments.length} appointments:`, allAppointments.map(apt => ({
+  id: apt.id,
+  date: apt.date,
+  time: apt.time,
+  products: apt.products,
+  productsCount: apt.products?.length || 0,
+  services: apt.services,
+  price: apt.price
+})));
+
+// Create a map of appointments by date and time for faster lookup
+const appointmentMap = new Map();
+allAppointments.forEach(apt => {
+  const key = `${apt.date}_${apt.time || ''}`;
+  appointmentMap.set(key, apt);
+  console.log(`🗺️ DEBUG: Map key "${key}" -> appointment with ${apt.products?.length || 0} products`);
+});
+
+for (const docSnap of snapshot.docs) {
+  const t = docSnap.data();
+  let treatmentAmount = 0;
+  let products = [];
+  
+  try {
+    // Try multiple matching strategies
+    let matchingAppointment = null;
+    
+    // Strategy 1: Exact match with date and time
+    const exactKey = `${t.date}_${t.time || ''}`;
+    matchingAppointment = appointmentMap.get(exactKey);
+    
+    // Strategy 2: Date-only match if exact fails
+    if (!matchingAppointment && t.date) {
+      matchingAppointment = allAppointments.find(apt => {
+        if (apt.date === t.date) {
+          // Check if time is close (handle potential format differences)
+          if (!t.time || !apt.time) return true;
+          // Normalize times for comparison
+          const treatmentTime = t.time.trim().toLowerCase();
+          const appointmentTime = apt.time.trim().toLowerCase();
+          return treatmentTime === appointmentTime;
+        }
+        return false;
+      });
+    }
+    
+    // Strategy 3: Fuzzy time matching
+    if (!matchingAppointment && t.date) {
+      matchingAppointment = allAppointments.find(apt => {
+        if (apt.date === t.date) {
+          // More flexible time matching
+          if (!t.time || !apt.time) return true;
+          // Extract just the hour part for comparison
+          const treatmentHour = t.time.split(':')[0];
+          const appointmentHour = apt.time.split(':')[0];
+          return treatmentHour === appointmentHour;
+        }
+        return false;
+      });
+    }
+    
+    if (matchingAppointment) {
+      products = matchingAppointment.products || [];
+      
+      // Calculate actual amount from services + products (same as treatment history calculation)
+      let servicesTotal = 0;
+      if (matchingAppointment.services && Array.isArray(matchingAppointment.services)) {
+        servicesTotal = matchingAppointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+      } else if (matchingAppointment.price) {
+        servicesTotal = matchingAppointment.price;
+      }
+      
+      let productsTotal = 0;
+      if (matchingAppointment.products && Array.isArray(matchingAppointment.products)) {
+        productsTotal = matchingAppointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+      }
+      
+      treatmentAmount = servicesTotal + productsTotal;
+    } else {
+      // Fallback to treatment amount if appointment not found
+      treatmentAmount = t.amount || 0;
+    }
+  } catch (e) {
+    // Improved error handling with specific error categorization
+    if (e.message.includes('network')) {
+      console.warn("Network error in treatment calculation - using fallback:", e.message);
+    } else if (e.message.includes('permission')) {
+      console.warn("Permission error in treatment calculation - using fallback:", e.message);
+    } else if (e.message.includes('not found')) {
+      console.warn("Data not found in treatment calculation - using fallback:", e.message);
+    } else {
+      console.warn("Unexpected error in treatment calculation:", e);
+    }
+    
+    // Safe fallback with validation
+    treatmentAmount = (typeof t.amount === 'number' && t.amount > 0) ? t.amount : 0;
+  }
+  
+  actualTotalSpent += treatmentAmount;
+  treatmentDataForTotal.push({ ...t, products, actualAmount: treatmentAmount });
+}
+
 document.getElementById('detail-visits').textContent = totalVisits;
-document.getElementById('detail-spent').textContent = `₱${totalSpent.toFixed(0)}`;
-snapshot.forEach(docSnap => {
-const t = docSnap.data();
+document.getElementById('detail-spent').textContent = `₱${actualTotalSpent.toFixed(0)}`;
+
+// treatmentDataForTotal already contains the calculated amounts and products, reuse it for the table
+const treatmentData = treatmentDataForTotal;
+
+// Generate table rows with products and actual amounts
+treatmentData.forEach(t => {
 const row = document.createElement('tr');
+  
+
+const productsList = t.products && t.products.length > 0 
+  ? t.products.map(p => {
+      const productName = p.name || p.productName || 'Unknown Product';
+      const productPrice = p.price || 0;
+      return `${productName} (₱${productPrice.toFixed(0)})`;
+    }).join(', ')
+  : '-';
+  
 row.innerHTML = `
 <td>${t.date ? formatDate(t.date) : '-'}</td>
 <td>${t.time || '-'}</td>
@@ -9556,7 +9971,8 @@ row.innerHTML = `
 <td>${t.session || '-'}</td>
 <td>${t.staff || '-'}</td>
 <td>${t.mop || '-'}</td>
-<td><strong style="color:var(--success);">₱${(t.amount || 0).toFixed(0)}</strong></td>
+<td><strong style="color:var(--success);">₱${t.actualAmount.toFixed(0)}</strong></td>
+<td style="max-width:150px;word-wrap:break-word;">${productsList}</td>
 <td>${t.notes || '-'}</td>
 `;
 tableBody.appendChild(row);
@@ -10281,12 +10697,26 @@ serviceAppointments[svcName] = (serviceAppointments[svcName] || 0) + 1;
 revenueByService[apt.service] = (revenueByService[apt.service] || 0) + (apt.price || 0);
 serviceAppointments[apt.service] = (serviceAppointments[apt.service] || 0) + 1;
 }
+// Calculate accurate appointment revenue including services + products (same as client total calculations)
+let appointmentRevenue = 0;
+if (apt.services && Array.isArray(apt.services)) {
+  const servicesTotal = apt.services.reduce((sum, s) => sum + (s.price || 0), 0);
+  appointmentRevenue += servicesTotal;
+} else if (apt.price) {
+  appointmentRevenue += apt.price;
+}
+
+if (apt.products && Array.isArray(apt.products)) {
+  const productsTotal = apt.products.reduce((sum, p) => sum + (p.price || 0), 0);
+  appointmentRevenue += productsTotal;
+}
+
 const service = allServices.find(s => apt.services?.[0]?.id === s.id || apt.service === s.name);
 if (service) {
-revenueByCategory[service.category] = (revenueByCategory[service.category] || 0) + (apt.price || 0);
+revenueByCategory[service.category] = (revenueByCategory[service.category] || 0) + appointmentRevenue;
 }
 if (apt.date) {
-dailyRevenue[apt.date] = (dailyRevenue[apt.date] || 0) + (apt.price || 0);
+dailyRevenue[apt.date] = (dailyRevenue[apt.date] || 0) + appointmentRevenue;
 }
 appointmentsByStatus[apt.status || 'pending']++;
 if (apt.isPartialPayment) {
@@ -10644,10 +11074,29 @@ const key = d.toLocaleDateString('en-PH', { month: 'short', year: '2-digit' });
 monthlyData[key] = 0;
 }
 appointments.forEach(apt => {
-if (!apt.date) return;
+if (!apt.date || apt.status !== 'completed') return;
 const aDate = new Date(apt.date);
 const key = aDate.toLocaleDateString('en-PH', { month: 'short', year: '2-digit' });
-if (monthlyData.hasOwnProperty(key)) monthlyData[key] += apt.price || 0;
+if (monthlyData.hasOwnProperty(key)) {
+  // Calculate accurate revenue including services + products (same as client total calculations)
+  let appointmentRevenue = 0;
+  
+  // Add services total
+  if (apt.services && Array.isArray(apt.services)) {
+    const servicesTotal = apt.services.reduce((sum, s) => sum + (s.price || 0), 0);
+    appointmentRevenue += servicesTotal;
+  } else if (apt.price) {
+    appointmentRevenue += apt.price;
+  }
+  
+  // Add products total
+  if (apt.products && Array.isArray(apt.products)) {
+    const productsTotal = apt.products.reduce((sum, p) => sum + (p.price || 0), 0);
+    appointmentRevenue += productsTotal;
+  }
+  
+  monthlyData[key] += appointmentRevenue;
+}
 });
 if (analyticsCharts.trends) analyticsCharts.trends.destroy();
 analyticsCharts.trends = new Chart(ctx, {
@@ -11082,23 +11531,184 @@ document.getElementById('print-birthdate').textContent = client.birthDate ? form
 document.getElementById('print-medical').textContent = client.medicalHistory || 'None';
 const joinedDate = client.createdAt?.toDate ? client.createdAt.toDate() : new Date();
 document.getElementById('print-joined').textContent = joinedDate.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+// Calculate total spent from treatments using the same Map-based approach as client detail
+let actualTotalSpent = 0;
+try {
+  // Get all appointments for this client once (more efficient)
+  const allAppointmentsSnapshot = await getDocs(query(collection(db, "appointments"), where("clientId", "==", currentDetailClientId)));
+  const allAppointments = [];
+  allAppointmentsSnapshot.forEach(doc => {
+    const appointment = { id: doc.id, ...doc.data() };
+    allAppointments.push(appointment);
+  });
+
+  // Create a map of appointments by date and time for faster lookup
+  const appointmentMap = new Map();
+  allAppointments.forEach(apt => {
+    const key = `${apt.date}_${apt.time || ''}`;
+    appointmentMap.set(key, apt);
+  });
+
+  for (const treatment of treatments) {
+    let treatmentAmount = 0;
+    let products = [];
+    
+    // Try multiple matching strategies (same as client detail)
+    let matchingAppointment = null;
+    
+    // Strategy 1: Exact match with date and time
+    const exactKey = `${treatment.date}_${treatment.time || ''}`;
+    matchingAppointment = appointmentMap.get(exactKey);
+    
+    // Strategy 2: Date-only match if exact fails
+    if (!matchingAppointment && treatment.date) {
+      matchingAppointment = allAppointments.find(apt => {
+        if (apt.date === treatment.date) {
+          if (!treatment.time || !apt.time) return true;
+          const treatmentTime = treatment.time.trim().toLowerCase();
+          const appointmentTime = apt.time.trim().toLowerCase();
+          return treatmentTime === appointmentTime;
+        }
+        return false;
+      });
+    }
+    
+    // Strategy 3: Fuzzy time matching
+    if (!matchingAppointment && treatment.date) {
+      matchingAppointment = allAppointments.find(apt => {
+        if (apt.date === treatment.date) {
+          if (!treatment.time || !apt.time) return true;
+          const treatmentHour = treatment.time.split(':')[0];
+          const appointmentHour = apt.time.split(':')[0];
+          return treatmentHour === appointmentHour;
+        }
+        return false;
+      });
+    }
+    
+    if (matchingAppointment) {
+      products = matchingAppointment.products || [];
+      
+      // Calculate actual amount from services + products (same as total spent calculation)
+      let servicesTotal = 0;
+      if (matchingAppointment.services && Array.isArray(matchingAppointment.services)) {
+        servicesTotal = matchingAppointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+      } else if (matchingAppointment.price) {
+        servicesTotal = matchingAppointment.price;
+      }
+      
+      let productsTotal = 0;
+      if (matchingAppointment.products && Array.isArray(matchingAppointment.products)) {
+        productsTotal = matchingAppointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+      }
+      
+      treatmentAmount = servicesTotal + productsTotal;
+    } else {
+      // Fallback to treatment amount if appointment not found
+      treatmentAmount = treatment.amount || 0;
+    }
+    
+    actualTotalSpent += treatmentAmount;
+  }
+} catch (e) {
+console.warn("Total spent calculation warning in printed profile:", e);
+// Fallback to treatment amounts if calculation fails
+actualTotalSpent = treatments.reduce((sum, t) => sum + (t.amount || 0), 0);
+}
+
 document.getElementById('print-visits').textContent = client.totalVisits || 0;
-document.getElementById('print-spent').textContent = `₱${(client.totalSpent || 0).toFixed(0)}`;
+document.getElementById('print-spent').textContent = `₱${actualTotalSpent.toFixed(0)}`;
 document.getElementById('print-generated').textContent = new Date().toLocaleString('en-PH');
+
+// Calculate treatments with products for the printed table (reuse the same appointments data as total calculation)
+const treatmentsWithProducts = [];
+for (const treatment of treatments) {
+  let products = [];
+  let actualAmount = 0;
+  
+  try {
+    // Try multiple matching strategies (same as total calculation)
+    let matchingAppointment = null;
+    
+    // Strategy 1: Exact match with date and time
+    const exactKey = `${treatment.date}_${treatment.time || ''}`;
+    matchingAppointment = appointmentMap.get(exactKey);
+    
+    // Strategy 2: Date-only match if exact fails
+    if (!matchingAppointment && treatment.date) {
+      matchingAppointment = allAppointments.find(apt => {
+        if (apt.date === treatment.date) {
+          if (!treatment.time || !apt.time) return true;
+          const treatmentTime = treatment.time.trim().toLowerCase();
+          const appointmentTime = apt.time.trim().toLowerCase();
+          return treatmentTime === appointmentTime;
+        }
+        return false;
+      });
+    }
+    
+    // Strategy 3: Fuzzy time matching
+    if (!matchingAppointment && treatment.date) {
+      matchingAppointment = allAppointments.find(apt => {
+        if (apt.date === treatment.date) {
+          if (!treatment.time || !apt.time) return true;
+          const treatmentHour = treatment.time.split(':')[0];
+          const appointmentHour = apt.time.split(':')[0];
+          return treatmentHour === appointmentHour;
+        }
+        return false;
+      });
+    }
+    
+    if (matchingAppointment) {
+      products = matchingAppointment.products || [];
+      
+      // Calculate actual amount from services + products (same as total spent calculation)
+      let servicesTotal = 0;
+      if (matchingAppointment.services && Array.isArray(matchingAppointment.services)) {
+        servicesTotal = matchingAppointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+      } else if (matchingAppointment.price) {
+        servicesTotal = matchingAppointment.price;
+      }
+      
+      let productsTotal = 0;
+      if (matchingAppointment.products && Array.isArray(matchingAppointment.products)) {
+        productsTotal = matchingAppointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+      }
+      
+      actualAmount = servicesTotal + productsTotal;
+    } else {
+      // Fallback to treatment amount if appointment not found
+      actualAmount = treatment.amount || 0;
+    }
+  } catch (e) {
+    console.warn("Error fetching appointment data for printed treatment:", e);
+    actualAmount = treatment.amount || 0; // Fallback
+  }
+  
+  treatmentsWithProducts.push({ ...treatment, products, actualAmount });
+}
 
 const printBody = document.getElementById('print-treatments-body');
 if (printBody) {
-if (treatments.length === 0) {
-printBody.innerHTML = `<tr><td colspan="8" style="padding:14px;text-align:center;color:#666;font-style:italic;">No treatments yet</td></tr>`;
+if (treatmentsWithProducts.length === 0) {
+printBody.innerHTML = `<tr><td colspan="9" style="padding:14px;text-align:center;color:#666;font-style:italic;">No treatments yet</td></tr>`;
 } else {
-printBody.innerHTML = treatments.map(t => {
+printBody.innerHTML = treatmentsWithProducts.map(t => {
 const dateStr = t.date ? formatDate(t.date) : '-';
 const timeStr = t.time || '-';
 const serviceStr = Array.isArray(t.services) ? t.services.join(', ') : (t.service || '-');
 const sessionStr = t.sessionType || (t.isPackage ? 'Package' : '1');
 const staffStr = t.staff || '-';
 const mopStr = t.mop || (t.paymentMethod || 'Cash');
-const amountStr = `P${(t.amount || 0).toFixed(0)}`;
+const amountStr = `P${t.actualAmount.toFixed(0)}`;
+const productsStr = t.products && t.products.length > 0 
+  ? t.products.map(p => {
+      const productName = p.name || p.productName || 'Unknown Product';
+      const productPrice = p.price || 0;
+      return `${productName} (P${productPrice.toFixed(0)})`;
+    }).join(', ')
+  : '-';
 const notesStr = t.notes || '-';
 return `<tr style="border-bottom:1px solid #f0f0f0;">
 <td style="padding:8px;font-size:11px;color:#5a4a5a;font-weight:500;">${escapeHtml(dateStr)}</td>
@@ -11108,9 +11718,59 @@ return `<tr style="border-bottom:1px solid #f0f0f0;">
 <td style="padding:8px;font-size:11px;color:#5a4a5a;">${escapeHtml(staffStr)}</td>
 <td style="padding:8px;font-size:11px;color:#5a4a5a;text-align:center;font-weight:500;">${escapeHtml(mopStr)}</td>
 <td style="padding:8px;font-size:11px;text-align:right;font-weight:600;color:#10b981;">${escapeHtml(amountStr)}</td>
+<td style="padding:8px;font-size:11px;color:#5a4a5a;max-width:120px;word-wrap:break-word;">${escapeHtml(productsStr)}</td>
 <td style="padding:8px;font-size:11px;color:#5a4a5a;max-width:100px;word-wrap:break-word;">${escapeHtml(notesStr)}</td>
 </tr>`;
 }).join('');
+}
+}
+
+// Fetch and populate products data
+let products = [];
+try {
+const appointmentsSnapshot = await getDocs(query(collection(db, "appointments"), where("clientId", "==", currentDetailClientId)));
+products = [];
+appointmentsSnapshot.forEach(doc => {
+  const appointment = doc.data();
+  if (appointment.products && Array.isArray(appointment.products) && appointment.products.length > 0) {
+    appointment.products.forEach(product => {
+      products.push({
+        date: appointment.date,
+        time: appointment.time,
+        appointmentId: doc.id,
+        ...product
+      });
+    });
+  }
+});
+
+// Sort products by date (most recent first)
+products.sort((a, b) => {
+  const ad = a.date ? new Date(a.date) : new Date(0);
+  const bd = b.date ? new Date(b.date) : new Date(0);
+  return bd - ad;
+});
+} catch (e) {
+console.warn("Products fetch warning:", e);
+}
+
+const printProductsBody = document.getElementById('print-products-body');
+if (printProductsBody) {
+if (products.length === 0) {
+  printProductsBody.innerHTML = `<tr><td colspan="4" style="padding:14px;text-align:center;color:#666;font-style:italic;">No products purchased yet</td></tr>`;
+} else {
+  printProductsBody.innerHTML = products.map(p => {
+    const dateStr = p.date ? formatDate(p.date) : '-';
+    const productName = escapeHtml(p.name || 'Product');
+    const priceStr = `P${(p.price || 0).toFixed(0)}`;
+    const appointmentInfo = p.date && p.time ? `${formatDate(p.date)} ${p.time}` : '-';
+    return `<tr style="border-bottom:1px solid #f0f0f0;">
+      <td style="padding:8px;font-size:11px;color:#5a4a5a;font-weight:500;">${dateStr}</td>
+      <td style="padding:8px;font-size:11px;color:#5a4a5a;max-width:150px;word-wrap:break-word;">${productName}</td>
+      <td style="padding:8px;font-size:11px;text-align:right;font-weight:600;color:#10b981;">${priceStr}</td>
+      <td style="padding:8px;font-size:11px;color:#5a4a5a;">${appointmentInfo}</td>
+    </tr>`;
+  }).join('');
 }
 }
 
@@ -11836,17 +12496,34 @@ const timeDisplay = appt.time || '-';
 const clientName = appt.clientName || 'Unknown';
 const staffName = appt.staff || appt.appointmentStaff || '-';
 const mop = appt.mop || appt.paymentMethod || '—';
-const total = Math.round(appt.price || 0);
+const services = Array.isArray(appt.services) ? appt.services : [];
+const products = Array.isArray(appt.products) ? appt.products : [];
+
+// Calculate proper total from services and products
+const servicesTotal = services.reduce((sum, s) => sum + (s.price || 0), 0);
+const productsTotal = products.reduce((sum, p) => sum + (p.price || 0), 0);
+const calculatedTotal = servicesTotal + productsTotal;
+
+// Use calculated total, fallback to stored price if needed
+const total = Math.round(calculatedTotal || appt.price || 0);
 const paid = Math.round(appt.amountPaid || 0);
 const remaining = Math.round(appt.remainingBalance || 0);
 const isPartial = !!appt.isPartialPayment;
-const services = Array.isArray(appt.services) ? appt.services : [];
 const servicesHtml = (services.length > 0)
   ? services.map(s => `<tr>
       <td style="padding:8px 0;border-bottom:1px dashed #eee;">${escapeHtml(s.name || 'Service')}</td>
-      <td style="padding:8px 0;border-bottom:1px dashed #eee;text-align:right;font-weight:700;">₱${Math.round(s.price || 0).toLocaleString()}</td>
+      <td style="padding:8px 0;border-bottom:1px dashed #eee;text-align:right;font-weight:700;">${Math.round(s.price || 0).toLocaleString()}</td>
     </tr>`).join('')
-  : `<tr><td style="padding:8px 0;border-bottom:1px dashed #eee;">${escapeHtml(appt.service || 'Service')}</td><td style="padding:8px 0;border-bottom:1px dashed #eee;text-align:right;font-weight:700;">₱${total.toLocaleString()}</td></tr>`;
+  : `<tr><td style="padding:8px 0;border-bottom:1px dashed #eee;">${escapeHtml(appt.service || 'Service')}</td><td style="padding:8px 0;border-bottom:1px dashed #eee;text-align:right;font-weight:700;">${Math.round(appt.price || 0).toLocaleString()}</td></tr>`;
+
+const productsHtml = (products.length > 0)
+  ? products.map(p => `<tr>
+      <td style="padding:8px 0;border-bottom:1px dashed #eee;">${escapeHtml(p.name || 'Product')}</td>
+      <td style="padding:8px 0;border-bottom:1px dashed #eee;text-align:right;font-weight:700;">${Math.round(p.price || 0).toLocaleString()}</td>
+    </tr>`).join('')
+  : '';
+
+const hasProducts = products.length > 0;
 
 const html = `<!doctype html>
 <html lang="en">
@@ -11934,6 +12611,21 @@ table{width:100%;border-collapse:collapse;margin-top:8px;}
         </tbody>
       </table>
 
+      ${hasProducts ? `
+      <div class="title" style="margin-top:20px;">Products</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="text-align:left;padding:8px 0;border-bottom:2px solid #f5e6e8;">Item</th>
+            <th style="text-align:right;padding:8px 0;border-bottom:2px solid #f5e6e8;">Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${productsHtml}
+        </tbody>
+      </table>
+      ` : ''}
+
       <div class="totals">
         <div class="row"><span>Total</span><strong>₱${total.toLocaleString()}</strong></div>
         ${isPartial ? `<div class="row"><span>Paid</span><strong>₱${paid.toLocaleString()}</strong></div>
@@ -12013,17 +12705,224 @@ if (newStatus === 'completed') {
 } else {
   if (!confirm(`⚠️ Update status to "${newStatus}"?`)) return;
 }
-await updateDoc(doc(db, "appointments", appointmentId), {
+// Get appointment data before updating for stock reduction
+const appointmentRef = doc(db, "appointments", appointmentId);
+const appointmentDoc = await getDoc(appointmentRef);
+const appointmentData = appointmentDoc.exists() ? appointmentDoc.data() : null;
+
+await updateDoc(appointmentRef, {
 status: newStatus,
 updatedAt: new Date()
 });
 
-// When completing an appointment, also register it in treatment history.
+// When completing an appointment, also register it in treatment history and reduce stock.
 if (newStatus === 'completed') {
 try {
 await ensureTreatmentRecordedForAppointment(appointmentId);
+  
+  // Reduce product stock when appointment is completed with products (only if not already reduced)
+  if (appointmentData && appointmentData.products && appointmentData.products.length > 0 && !appointmentData.stockReduced) {
+    try {
+      let stockReductionSuccessful = true;
+      
+      for (const product of appointmentData.products) {
+        const productRef = doc(db, "inventory", product.id);
+        const productDoc = await getDoc(productRef);
+        
+        if (productDoc.exists()) {
+          const currentProduct = productDoc.data();
+          const currentQuantity = currentProduct.quantity || 0;
+          
+          // Use transaction with comprehensive error handling and retry logic
+          try {
+            const maxRetries = 3;
+            let retryCount = 0;
+            let success = false;
+            let lastError = null;
+            
+            while (retryCount < maxRetries && !success) {
+              try {
+                const result = await runTransaction(db, async (transaction) => {
+                  const productSnapshot = await transaction.get(productRef);
+                  
+                  if (!productSnapshot.exists()) {
+                    throw new Error(`Product not found: ${product.id}`);
+                  }
+                  
+                  const productData = productSnapshot.data();
+                  const currentQuantity = productData.quantity || 0;
+                  
+                  // Check if there's enough stock
+                  if (currentQuantity <= 0) {
+                    throw new Error(`Insufficient stock for ${product.name}: ${currentQuantity} available`);
+                  }
+                  
+                  // Validate business rules
+                  if (currentQuantity < (productData.minStock || 0)) {
+                    console.warn(`Warning: Stock for ${product.name} will fall below minimum level after reduction`);
+                  }
+                  
+                  const newQuantity = currentQuantity - 1;
+                  
+                  // Update within transaction with additional metadata
+                  transaction.update(productRef, {
+                    quantity: newQuantity,
+                    updatedAt: new Date(),
+                    lastTransactionId: `${appointmentId}_${Date.now()}`, // Track transaction source
+                    stockChangeReason: 'appointment_completion'
+                  });
+                  
+                  return { 
+                    oldQuantity: currentQuantity, 
+                    newQuantity,
+                    transactionId: `${appointmentId}_${Date.now()}`
+                  };
+                });
+                
+                // Transaction successful
+                console.log(`Stock reduced on completion: ${product.name} (${result.oldQuantity} → ${result.newQuantity}) [Transaction: ${result.transactionId}]`);
+                addActivity(`Stock reduced: ${product.name} (${result.oldQuantity} → ${result.newQuantity})`);
+                
+                // Check if stock is critically low
+                if (result.newQuantity <= 5) {
+                  addActivity(`⚠️ Low stock alert: ${product.name} - Only ${result.newQuantity} units remaining`, true);
+                }
+                
+                success = true;
+                
+              } catch (transactionError) {
+                lastError = transactionError;
+                retryCount++;
+                
+                // Log retry attempt
+                console.warn(`Stock reduction attempt ${retryCount}/${maxRetries} failed for ${product.name}:`, transactionError.message);
+                
+                // Exponential backoff for retries
+                if (retryCount < maxRetries) {
+                  const backoffDelay = Math.min(1000 * Math.pow(2, retryCount - 1), 5000);
+                  await new Promise(resolve => setTimeout(resolve, backoffDelay));
+                }
+                
+                // Don't retry on certain errors
+                if (transactionError.message.includes('Insufficient stock') || 
+                    transactionError.message.includes('Product not found')) {
+                  break; // These errors won't be resolved by retrying
+                }
+              }
+            }
+            
+            if (!success) {
+              throw lastError || new Error(`Failed after ${maxRetries} attempts`);
+            }
+            
+          } catch (error) {
+            console.error(`Comprehensive stock reduction error for ${product.name}:`, error);
+            
+            // Categorize error for better user feedback
+            let userMessage = 'Stock reduction failed';
+            if (error.message.includes('Insufficient stock')) {
+              userMessage = `Insufficient stock for ${product.name}`;
+            } else if (error.message.includes('Product not found')) {
+              userMessage = `Product ${product.name} not found in inventory`;
+            } else if (error.message.includes('permission')) {
+              userMessage = 'Permission denied - unable to update inventory';
+            } else if (error.message.includes('network')) {
+              userMessage = 'Network error - please check connection and try again';
+            } else {
+              userMessage = `Stock reduction failed: ${error.message}`;
+            }
+            
+            addActivity(`Warning: ${userMessage}`, true);
+            stockReductionSuccessful = false;
+            
+            // Log error for debugging
+            console.error(`Stock operation details:`, {
+              productId: product.id,
+              productName: product.name,
+              appointmentId: appointmentId,
+              error: error.message,
+              timestamp: new Date().toISOString()
+            });
+          }
+        } else {
+          console.warn(`Product not found in inventory: ${product.id}`);
+          addActivity(`Warning: Product not found in inventory: ${product.name}`, true);
+          stockReductionSuccessful = false;
+        }
+      }
+      
+      // Mark stock as reduced in the appointment to prevent double reduction
+      if (stockReductionSuccessful) {
+        await updateDoc(appointmentRef, {
+          stockReduced: true,
+          updatedAt: new Date()
+        });
+        
+        // Refresh inventory display
+        loadInventory();
+      }
+    } catch (stockError) {
+      console.error("Stock reduction error on completion:", stockError);
+      addActivity(`Warning: Stock reduction failed - ${stockError.message}`, true);
+    }
+  } else if (appointmentData && appointmentData.stockReduced) {
+    console.log(`Stock already reduced for appointment ${appointmentId} - skipping reduction`);
+  }
 } catch (e) {
 console.warn('Treatment history sync warning:', e);
+}
+}
+
+// Restore stock when appointment is cancelled (if it was previously completed and stock was reduced)
+if (newStatus === 'cancelled' && appointmentData && appointmentData.status === 'completed' && appointmentData.products && appointmentData.products.length > 0 && appointmentData.stockReduced) {
+try {
+  for (const product of appointmentData.products) {
+    const productRef = doc(db, "inventory", product.id);
+    
+    // Use transaction to prevent race conditions
+    try {
+      await runTransaction(db, async (transaction) => {
+        const productSnapshot = await transaction.get(productRef);
+        
+        if (!productSnapshot.exists()) {
+          throw new Error(`Product not found: ${product.id}`);
+        }
+        
+        const productData = productSnapshot.data();
+        const currentQuantity = productData.quantity || 0;
+        const newQuantity = currentQuantity + 1;
+        
+        // Update within transaction
+        transaction.update(productRef, {
+          quantity: newQuantity,
+          updatedAt: new Date()
+        });
+        
+        return { oldQuantity: currentQuantity, newQuantity };
+      }).then((result) => {
+        console.log(`Stock restored on cancellation: ${product.name} (${result.oldQuantity} → ${result.newQuantity})`);
+        addActivity(`Stock restored: ${product.name} (${result.oldQuantity} → ${result.newQuantity})`);
+      }).catch((error) => {
+        console.warn(`Stock restoration transaction failed for ${product.name}: ${error.message}`);
+        addActivity(`Warning: Stock restoration failed for ${product.name} - ${error.message}`, true);
+      });
+    } catch (transactionError) {
+      console.error(`Stock restoration transaction error for ${product.name}:`, transactionError);
+      addActivity(`Warning: Stock restoration transaction error for ${product.name} - ${transactionError.message}`, true);
+    }
+  }
+  
+  // Reset stock reduction flag
+  await updateDoc(appointmentRef, {
+    stockReduced: false,
+    updatedAt: new Date()
+  });
+  
+  // Refresh inventory display
+  loadInventory();
+} catch (stockError) {
+  console.error("Stock restoration error on cancellation:", stockError);
+  addActivity(`Warning: Stock restoration failed - ${stockError.message}`, true);
 }
 }
 
@@ -12428,11 +13327,326 @@ break;
 }
 });
 
-// Validation helper functions for keyboard shortcuts
+// Centralized Validation System
+const FormValidator = {
+  // Common validation patterns
+  patterns: {
+    name: /^[a-zA-Z\s\-\.]{2,50}$/,
+    phone: /^[\d\-\+\(\)\s]{10,15}$/,
+    email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+    currency: /^\d+(\.\d{1,2})?$/,
+    number: /^\d+$/,
+    text: /^.{1,500}$/,
+    notes: /^.{0,1000}$/
+  },
+
+  // Validation messages
+  messages: {
+    required: 'This field is required',
+    invalidName: 'Please enter a valid name (2-50 characters, letters only)',
+    invalidPhone: 'Please enter a valid phone number (10-15 digits)',
+    invalidEmail: 'Please enter a valid email address',
+    invalidCurrency: 'Please enter a valid amount',
+    invalidNumber: 'Please enter a valid number',
+    invalidText: 'Please enter valid text (1-500 characters)',
+    invalidNotes: 'Notes must be less than 1000 characters',
+    minStock: 'Quantity must be greater than or equal to 0',
+    minPrice: 'Price must be greater than 0'
+  },
+
+  // Main validation function
+  validateField: function(value, rules) {
+    const errors = [];
+    
+    for (const rule of rules) {
+      switch (rule.type) {
+        case 'required':
+          if (!value || value.trim() === '') {
+            errors.push(this.messages.required);
+          }
+          break;
+          
+        case 'name':
+          if (value && !this.patterns.name.test(value)) {
+            errors.push(this.messages.invalidName);
+          }
+          break;
+          
+        case 'phone':
+          if (value && !this.patterns.phone.test(value)) {
+            errors.push(this.messages.invalidPhone);
+          }
+          break;
+          
+        case 'email':
+          if (value && !this.patterns.email.test(value)) {
+            errors.push(this.messages.invalidEmail);
+          }
+          break;
+          
+        case 'currency':
+          if (value && !this.patterns.currency.test(value)) {
+            errors.push(this.messages.invalidCurrency);
+          }
+          break;
+          
+        case 'number':
+          if (value && !this.patterns.number.test(value)) {
+            errors.push(this.messages.invalidNumber);
+          }
+          break;
+          
+        case 'text':
+          if (value && !this.patterns.text.test(value)) {
+            errors.push(this.messages.invalidText);
+          }
+          break;
+          
+        case 'notes':
+          if (value && !this.patterns.notes.test(value)) {
+            errors.push(this.messages.invalidNotes);
+          }
+          break;
+          
+        case 'min':
+          if (value && parseFloat(value) < rule.value) {
+            errors.push(rule.message || `Value must be at least ${rule.value}`);
+          }
+          break;
+          
+        case 'max':
+          if (value && parseFloat(value) > rule.value) {
+            errors.push(rule.message || `Value must be at most ${rule.value}`);
+          }
+          break;
+      }
+    }
+    
+    return errors;
+  },
+
+  // Validate entire form
+  validateForm: function(formId, validationRules) {
+    const form = document.getElementById(formId);
+    if (!form) return { isValid: false, errors: ['Form not found'] };
+    
+    const errors = {};
+    let isValid = true;
+    
+    for (const [fieldName, rules] of Object.entries(validationRules)) {
+      const field = form.querySelector(`[name="${fieldName}"]`) || 
+                   document.getElementById(fieldName) ||
+                   form.querySelector(`#${fieldName}`);
+      
+      if (field) {
+        const value = field.value || '';
+        const fieldErrors = this.validateField(value, rules);
+        
+        if (fieldErrors.length > 0) {
+          errors[fieldName] = fieldErrors;
+          isValid = false;
+          this.showFieldError(field, fieldErrors[0]);
+        } else {
+          this.clearFieldError(field);
+        }
+      }
+    }
+    
+    return { isValid, errors };
+  },
+
+  // Show field error
+  showFieldError: function(field, message) {
+    this.clearFieldError(field);
+    field.classList.add('error');
+    
+    const errorElement = document.createElement('div');
+    errorElement.className = 'field-error';
+    errorElement.textContent = message;
+    errorElement.style.cssText = `
+      color: var(--danger);
+      font-size: 12px;
+      margin-top: 5px;
+      display: block;
+    `;
+    
+    field.parentNode.appendChild(errorElement);
+  },
+
+  // Clear field error
+  clearFieldError: function(field) {
+    field.classList.remove('error');
+    const existingError = field.parentNode.querySelector('.field-error');
+    if (existingError) {
+      existingError.remove();
+    }
+  },
+
+  // Clear all form errors
+  clearFormErrors: function(formId) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    
+    form.querySelectorAll('.error').forEach(field => {
+      this.clearFieldError(field);
+    });
+  }
+};
+
+// Centralized Revenue Calculation System
+const RevenueCalculator = {
+  // Calculate total revenue from an appointment (services + products)
+  calculateAppointmentRevenue: function(appointment) {
+    let totalRevenue = 0;
+    
+    // Add services total
+    if (appointment.services && Array.isArray(appointment.services)) {
+      const servicesTotal = appointment.services.reduce((sum, s) => sum + (s.price || 0), 0);
+      totalRevenue += servicesTotal;
+    } else if (appointment.price) {
+      totalRevenue += appointment.price;
+    }
+    
+    // Add products total
+    if (appointment.products && Array.isArray(appointment.products)) {
+      const productsTotal = appointment.products.reduce((sum, p) => sum + (p.price || 0), 0);
+      totalRevenue += productsTotal;
+    }
+    
+    return totalRevenue;
+  },
+  
+  // Calculate total revenue from multiple appointments
+  calculateTotalRevenue: function(appointments) {
+    return appointments.reduce((sum, apt) => sum + this.calculateAppointmentRevenue(apt), 0);
+  },
+  
+  // Calculate revenue for appointments in a date range
+  calculateRevenueInRange: function(appointments, startDate, endDate) {
+    const filteredAppointments = appointments.filter(apt => {
+      if (!apt.date) return false;
+      const aptDate = new Date(apt.date);
+      return aptDate >= startDate && aptDate <= endDate;
+    });
+    return this.calculateTotalRevenue(filteredAppointments);
+  }
+};
+
+// Centralized Modal Management System
+const ModalManager = {
+  activeModals: new Set(),
+  eventListeners: new Map(),
+  
+  // Register modal
+  registerModal: function(modalId) {
+    this.activeModals.add(modalId);
+  },
+  
+  // Unregister modal
+  unregisterModal: function(modalId) {
+    this.activeModals.delete(modalId);
+    this.cleanupModal(modalId);
+  },
+  
+  // Add event listener with tracking
+  addTrackedListener: function(element, event, handler, options) {
+    if (!element) return;
+    
+    const key = `${element.id || 'anonymous'}_${event}`;
+    const wrappedHandler = handler.bind(this);
+    
+    element.addEventListener(event, wrappedHandler, options);
+    
+    // Store reference for cleanup
+    if (!this.eventListeners.has(key)) {
+      this.eventListeners.set(key, []);
+    }
+    this.eventListeners.get(key).push({ element, event, handler: wrappedHandler, options });
+  },
+  
+  // Clean up modal event listeners
+  cleanupModal: function(modalId) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    // Remove all tracked event listeners for this modal
+    this.eventListeners.forEach((listeners, key) => {
+      if (key.startsWith(modalId)) {
+        listeners.forEach(({ element, event, handler, options }) => {
+          element.removeEventListener(event, handler, options);
+        });
+        this.eventListeners.delete(key);
+      }
+    });
+    
+    // Clean up any remaining event listeners
+    const clonedModal = modal.cloneNode(true);
+    modal.parentNode.replaceChild(clonedModal, modal);
+  },
+  
+  // Safe modal close with cleanup
+  closeModal: function(modalId, delay = 300) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    modal.classList.remove('active');
+    
+    setTimeout(() => {
+      this.cleanupModal(modalId);
+      modal.classList.add('hidden');
+      this.unregisterModal(modalId);
+    }, delay);
+  },
+  
+  // Safe modal remove with cleanup
+  removeModal: function(modalId, delay = 300) {
+    const modal = document.getElementById(modalId);
+    if (!modal) return;
+    
+    modal.classList.remove('active');
+    
+    setTimeout(() => {
+      this.cleanupModal(modalId);
+      if (modal.parentNode) {
+        modal.parentNode.removeChild(modal);
+      }
+      this.unregisterModal(modalId);
+    }, delay);
+  },
+  
+  // Clean up all modals
+  cleanupAll: function() {
+    this.activeModals.forEach(modalId => {
+      this.cleanupModal(modalId);
+    });
+    this.activeModals.clear();
+    this.eventListeners.clear();
+  },
+  
+  // Get modal statistics
+  getStats: function() {
+    return {
+      activeModals: this.activeModals.size,
+      trackedListeners: this.eventListeners.size
+    };
+  }
+};
+
+// Validation helper functions for keyboard shortcuts (updated to use centralized system)
 function validateClientForm() {
-const name = document.getElementById('new-client-name')?.value.trim();
-const contact = document.getElementById('new-client-contact')?.value.trim();
-return name && contact;
+  const validationRules = {
+    'new-client-name': [
+      { type: 'required' },
+      { type: 'name' }
+    ],
+    'new-client-contact': [
+      { type: 'required' },
+      { type: 'phone' }
+    ]
+  };
+  
+  const result = FormValidator.validateForm('add-client-form', validationRules);
+  return result.isValid;
 }
 
 function validateAppointmentForm() {
@@ -13261,7 +14475,7 @@ let html = `
 <!-- Category dropdown will be added here -->
 <div class="category-filter">
 <label for="category-select">Select Category:</label>
-<select id="category-select" onchange="filterServicesByCategory()" class="category-dropdown">
+<select id="category-select" onchange="filterServicesByCategory(this.value)" class="category-dropdown">
 <option value="all">All Categories</option>
 <option value="aurelift">Aurelift 88</option>
 <option value="diode">Diode Laser</option>
@@ -13348,10 +14562,7 @@ function loadPriceOverview() {
     tbody.innerHTML = html;
 }
 
-// Filter services by category
-window.filterServicesByCategory = function() {
-    loadPriceOverview();
-}
+// Filter services by category - Note: This function is defined earlier in the file (line 9923)
 
 // Edit service from overview
 function editServiceFromOverview(serviceId) {
