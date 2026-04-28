@@ -5666,28 +5666,14 @@ Filter:
 <!-- Quick Date Buttons -->
 <div style="display:flex;gap:5px;">
 <button class="btn btn-sm btn-outline" onclick="setActivityDate('today')">Today</button>
-<button class="btn btn-sm btn-outline" onclick="setActivityDate('yesterday')">Yesterday</button>
 <button class="btn btn-sm btn-outline" onclick="setActivityDate('week')">This Week</button>
 </div>
 <!-- Filters -->
-<input type="text" id="activity-filter-staff" placeholder="Filter by staff..." style="padding:8px;border:2px solid var(--secondary);border-radius:8px;background:#fff;width:180px;">
-<select id="activity-filter-type" style="padding:8px;border:2px solid var(--secondary);border-radius:8px;background:#fff;">
-<option value="">All Types</option>
-<option value="error">Errors Only</option>
-<option value="success">Success Only</option>
-<option value="appointment">Appointments</option>
-<option value="client">Clients</option>
-<option value="inventory">Inventory</option>
-</select>
-<button class="btn btn-primary btn-sm" onclick="filterActivityLogs()">
-<i class="fas fa-filter"></i> Filter
-</button>
-<button class="btn btn-outline btn-sm" onclick="clearActivityFilters()">
-<i class="fas fa-redo"></i> Clear
-</button>
-<button class="btn btn-success btn-sm" onclick="exportActivityLogs()">
-<i class="fas fa-file-export"></i> Export
-</button>
+<!-- <input type="text" id="activity-filter-staff" placeholder="Filter by staff..." style="padding:8px;border:2px solid var(--secondary);border-radius:8px;background:#fff;width:180px;"> -->
+
+
+
+
 </div>
 </div>
 <div class="card">
@@ -6717,7 +6703,7 @@ Filter:
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged, setPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, setDoc, onSnapshot, query, where, getDocs, getDoc, orderBy, writeBatch } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, addDoc, deleteDoc, doc, updateDoc, setDoc, onSnapshot, query, where, getDocs, getDoc, orderBy, writeBatch, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
 apiKey: "AIzaSyC-uy3DLim-C06ueatkNCr9bZ-4Cnqi5E4",
@@ -8691,10 +8677,13 @@ const treatmentSnapshots = await Promise.all(treatmentPromises);
 
 // Batch 2: Get all appointments for all clients in one query (more efficient)
 const allClientIds = clientDocs.map(doc => doc.id);
-const appointmentsSnapshot = await getDocs(query(
-  collection(db, "appointments"), 
-  where("clientId", "in", allClientIds)
-));
+let appointmentsSnapshot = { docs: [] };
+if (allClientIds.length > 0) {
+  appointmentsSnapshot = await getDocs(query(
+    collection(db, "appointments"), 
+    where("clientId", "in", allClientIds)
+  ));
+}
 
 // Create a lookup map for appointments
 const appointmentsMap = new Map();
@@ -12106,14 +12095,19 @@ updateActivityDateDisplay();
 renderActivityLogs();
 }
 
-function clearActivityFilters() {
+window.clearActivityFilters = function() {
+if (confirm('Are you sure you want to clear all activity logs? This action cannot be undone.')) {
+// Clear all activity logs
+allActivityLogs = [];
+filteredActivityLogs = [];
+currentActivityPage = 1;
 document.getElementById('activity-filter-staff').value = '';
 document.getElementById('activity-filter-type').value = '';
 currentActivityDate = null;
-currentActivityPage = 1;
-filteredActivityLogs = [...allActivityLogs];
 updateActivityDateDisplay();
 renderActivityLogs();
+addActivity('All activity logs cleared');
+}
 }
 
 window.exportActivityLogs = () => {
@@ -12932,6 +12926,7 @@ renderCalendar();
 
 // Real-time updates after status change
 updateClientOverview(); // Update client stats on dashboard
+loadClients(); // Refresh client grid to update revenue display
 if (window.currentViewingClientId) {
     viewClientDetail(window.currentViewingClientId); // Refresh client profile if currently viewing
 }
